@@ -12,7 +12,11 @@ int main()
 
     while ( i < amount + 1 )
     {
-        cout << i << endl;
+        if ( i % 3 == 0 ) {
+            cout << "zip" << endl;
+        } else {
+            cout << i << endl;
+        }
         ++i;
     }
 }
