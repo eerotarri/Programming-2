@@ -2,7 +2,6 @@
 
 using namespace std;
 
-// Write here a function counting the mean value
 
 int main()
 {
@@ -10,10 +9,18 @@ int main()
     cout << "From how many integer numbers you want to count the mean value? ";
     cin >> amount;
 
-    double num1;
-    double num2;
-    cout << "Input 1. number: ";
-    cin >> num1;
-    cout << "Input 2. number: ";
-    cin >> num2;
+    int i = 1;
+    int sum = 0;
+    int input;
+    if ( amount < 1) {
+        cout << "Cannot count mean value from "
+             << amount << " numbers" << endl;
+    } else {
+        while ( i < amount + 1 ) {
+            cout << "Input " << i << ". number: ";
+            cin >> input;
+            sum += input;
+            ++i;
+        }
+    }
 }
