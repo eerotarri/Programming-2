@@ -15,7 +15,11 @@ int main()
     cin >> number;
 
     int cubed = cube(number);
-    if ( ( ( cubed / number ) / number ) == number ) {
+    if ( number == 0 ) {
+        cout << "The cube of "
+             << number << " is "
+             << number << "." << endl;
+    } else if ( ( ( cubed / number ) / number ) == number ) {
         cout << "The cube of "
              << number << " is "
              << cubed << "." << endl;
