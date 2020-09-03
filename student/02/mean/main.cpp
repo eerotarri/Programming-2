@@ -2,6 +2,11 @@
 
 using namespace std;
 
+double mean(double summa, int jakaja)
+{
+    double keskiarvo = summa / jakaja;
+    return keskiarvo;
+}
 
 int main()
 {
@@ -10,7 +15,7 @@ int main()
     cin >> amount;
 
     int i = 1;
-    int sum = 0;
+    double sum = 0;
     int input;
     if ( amount < 1) {
         cout << "Cannot count mean value from "
@@ -22,5 +27,7 @@ int main()
             sum += input;
             ++i;
         }
+        double ka = mean(sum, amount);
+        cout << "Mean value of the given numbers is " << ka << endl;
     }
 }
