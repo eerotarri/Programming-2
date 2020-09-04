@@ -8,7 +8,7 @@ string encryption(string k, string t)
 {
     string alphabet = "abcdefghijklmnopqrstuvwxyz";
 
-    for (int i = 0; i < t.length(); i++) {
+    for (unsigned long int i = 0; i < t.length(); i++) {
         t.at(i) = k.at( alphabet.find( t.at( i ) ) );
     }
     return t;
@@ -38,8 +38,11 @@ int main()
             int error = 0;
             for ( char l = 'a'; l < 'z'; ++l ) {
                 space = key.find(l);
+                cout << space << endl;
                 if (space == string::npos) {
                     error += 1;
+                } else {
+                    cout << string::npos << endl;
                 }
             }
             if (error != 0) {
