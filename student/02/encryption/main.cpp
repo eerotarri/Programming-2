@@ -4,6 +4,16 @@
 
 using namespace std;
 
+string encryption(string k, string t)
+{
+    string alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+    for (int i = 0; i < t.length(); i++) {
+        t.at(i) = k.at( alphabet.find( t.at( i ) ) );
+    }
+    return t;
+}
+
 int main()
 {
     cout << "Enter the encryption key: ";
@@ -50,10 +60,8 @@ int main()
                 if (text_error != 0) {
                     cout << "Error! The encryption key must contain only lower case characters." << endl;
                 } else {
-                    // tähän salausalgoritmi
+                    cout << "Encrypted text: " << encryption(key, text) << endl;
                 }
-
-
             }
         }
     }
