@@ -38,13 +38,11 @@ int main()
             int error = 0;
             for ( char l = 'a'; l < 'z'; ++l ) {
                 space = key.find(l);
-                cout << space << endl;
-                if (space == string::npos) {
+                if (space > 26) {
                     error += 1;
-                } else {
-                    cout << string::npos << endl;
                 }
             }
+            cout << error << endl;
             if (error != 0) {
                 cout << "Error! The encryption key must contain all alphabets a-z." << endl;
             } else {
