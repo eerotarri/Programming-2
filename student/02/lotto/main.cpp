@@ -33,15 +33,15 @@ int main()
     cin >> drawn_balls;
 
     if ( ( total_balls <= 0 ) || ( drawn_balls <= 0 ) ) {
-        cout << "The number of balls must be a positive number" << endl;
+        cout << "The number of balls must be a positive number." << endl;
     } else if (drawn_balls > total_balls) {
         cout << "The maximum number of drawn balls "
-                "is the total amount of balls" << endl;
+                "is the total amount of balls." << endl;
     } else {
         unsigned long int prob = probability(total_balls, drawn_balls);
 
         cout << "The probability of guessing all "
-             << drawn_balls << " correctly is 1/" << prob
+             << drawn_balls << " balls correctly is 1/" << prob
              << endl;
     }
 }
