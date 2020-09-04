@@ -22,6 +22,7 @@ int main()
     cin >> key;
     key_length = key.length();
 
+    // Syötteenluku ja tarkistus
     if (key_length != 26) {
         cout << "Error! The encryption key must contain 26 characters." << endl;
     } else {
@@ -42,7 +43,6 @@ int main()
                     error += 1;
                 }
             }
-            cout << error << endl;
             if (error != 0) {
                 cout << "Error! The encryption key must contain all alphabets a-z." << endl;
             } else {
