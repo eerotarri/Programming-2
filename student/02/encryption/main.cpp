@@ -16,7 +16,7 @@ int main()
         cout << "Error! The encryption key must contain 26 characters." << endl;
     } else {
         int check = 0;
-        for (int i = 0; i < key_length; i++) {
+        for (unsigned long int i = 0; i < key_length; i++) {
             if ( islower(key.at(i)) == false ) {
                 check += 1;
             }
@@ -34,6 +34,26 @@ int main()
             }
             if (error != 0) {
                 cout << "Error! The encryption key must contain all alphabets a-z." << endl;
+            } else {
+                cout << "Enter the text to be encrypted: ";
+                string text;
+                string::size_type text_length = 0;
+                cin >> text;
+                text_length = text.length();
+
+                int text_error = 0;
+                for (unsigned long int j = 0; j < text_length; j++) {
+                    if ( islower(text.at(j)) == false ) {
+                        text_error += 1;
+                    }
+                }
+                if (text_error != 0) {
+                    cout << "Error! The encryption key must contain only lower case characters." << endl;
+                } else {
+                    // tähän salausalgoritmi
+                }
+
+
             }
         }
     }
