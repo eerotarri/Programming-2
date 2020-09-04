@@ -25,6 +25,7 @@ int main()
     // Syötteenluku ja tarkistus
     if (key_length != 26) {
         cout << "Error! The encryption key must contain 26 characters." << endl;
+        return 1;
     } else {
         int check = 0;
         for (unsigned long int i = 0; i < key_length; i++) {
@@ -34,17 +35,19 @@ int main()
         }
         if (check != 0) {
             cout << "Error! The encryption key must contain only lower case characters." << endl;
+            return 1;
         } else {
-            int space;
+            string::size_type space;
             int error = 0;
-            for ( char l = 'a'; l < 'z'; ++l ) {
+            for ( char l = 'a'; l <= 'z'; ++l ) {
                 space = key.find(l);
-                if (space > 26) {
+                if (space == string::npos) {
                     error += 1;
                 }
             }
             if (error != 0) {
                 cout << "Error! The encryption key must contain all alphabets a-z." << endl;
+                return 1;
             } else {
                 cout << "Enter the text to be encrypted: ";
                 string text;
@@ -60,6 +63,7 @@ int main()
                 }
                 if (text_error != 0) {
                     cout << "Error! The encryption key must contain only lower case characters." << endl;
+                    return 1;
                 } else {
                     cout << "Encrypted text: " << encryption(key, text) << endl;
                 }
