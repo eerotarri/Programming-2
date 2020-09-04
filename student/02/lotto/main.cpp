@@ -2,6 +2,26 @@
 
 using namespace std;
 
+unsigned long int factorial(long int num)
+{
+    unsigned long int sum = 1;
+    long int i;
+    for ( i = 1; i <= num; ++i ) {
+        sum = sum * i;
+    }
+    return sum;
+}
+
+unsigned long int probability(long int total, long int drawn)
+{
+    unsigned long int osoittaja = factorial(total);
+    unsigned long int nimittaja = factorial(total - drawn) * factorial(drawn);
+
+    unsigned long int prob = osoittaja / nimittaja;
+
+    return prob;
+}
+
 int main()
 {
     long int total_balls;
@@ -15,6 +35,15 @@ int main()
     if ( ( total_balls <= 0 ) || ( drawn_balls <= 0 ) ) {
         cout << "The number of balls must be a positive number" << endl;
     } else {
-        // cout << total_balls << " " << drawn_balls << endl;
+        unsigned long int prob = probability(total_balls, drawn_balls);
+/*
+        cout << "factorial " << total_balls
+             << " equals " << factorial(total_balls) << endl;
+        cout << "factorial " << drawn_balls
+             << " equals " << factorial(drawn_balls) << endl;
+*/
+        cout << "The probability of guessing all "
+             << drawn_balls << " correctly is 1/" << prob
+             << endl;
     }
 }
