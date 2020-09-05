@@ -10,8 +10,9 @@ void produce_random_numbers(unsigned int lower, unsigned int upper)
     cout << "Enter a seed value or an empty line: ";
     string s;
     cin >> s;
-
+    int is = stoi(s);
     default_random_engine generator;
+    generator.seed(is);
     uniform_int_distribution<int> distribution(lower, upper);
 
     while ( true ) {
