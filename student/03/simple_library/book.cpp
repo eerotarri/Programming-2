@@ -71,6 +71,22 @@ void Book::renew()
 {
     if ( loaned_ ) {
         due_day_ += 28;
+        while ( due_day_ > month_sizes[due_month_ - 1] )
+        {
+            if ( due_month_ == 2 && due_day_ == 29 )
+            {
+                return;
+            }
+            due_day_ -= month_sizes[due_month_ - 1];
+
+            ++due_month_;
+
+            if ( due_month_ > 12 )
+            {
+                due_month_ -= 12;
+                ++due_year_;
+            }
+        }
     } else {
         cout << "Not loaned: cannot be renewed" << endl;
     }
