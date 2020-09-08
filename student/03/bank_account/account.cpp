@@ -59,22 +59,11 @@ void Account::take_money(int amount) {
 
 void Account::transfer_to(Account acc, int amount) {
     if ( balance_ - amount < 0 - credit_limit_ ) {
-        if ( has_credit_ ) {
-            std::cout << "Cannot take money: balance underflow" << std::endl
-                      << "Transfer from " << iban_ << " failed" << std::endl;
-        } else {
-            std::cout << "Cannot take money: balance underflow" << std::endl
-                      << "Transfer from " << iban_ << " failed" << std::endl;
-        }
+        std::cout << "Cannot take money: balance underflow" << std::endl
+                  << "Transfer from " << iban_ << " failed" << std::endl;
     } else {
         acc.save_money(amount);
         balance_ -= amount;
-        if ( has_credit_ ) {
-            std::cout << amount << " euros taken: new balance of " << iban_ << " is " << balance_
-                      << " euros" << std::endl;
-        } else {
-            std::cout << amount << " euros taken: new balance of " << iban_ << " is " << balance_
-                      << " euros" << std::endl;
-        }
+        std::cout << amount << " euros taken: new balance of " << iban_ << " is " << balance_ << " euros" << std::endl;
     }
 }
