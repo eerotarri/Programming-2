@@ -11,7 +11,7 @@ class Account{
         void set_credit_limit(int limit);
         void save_money(int amount);
         void take_money(int amount);
-        void transfer_to(Account acc, int amount);
+        void transfer_to(Account& acc, int amount);
 
     private:
         // Generates IBAN (based on running_number_ below).
