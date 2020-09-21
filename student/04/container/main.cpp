@@ -53,13 +53,14 @@ bool is_ordered_non_strict_ascending(const std::vector< int >& ints)
 
 bool is_arithmetic_series(const std::vector< int >& ints)
 {
+    int arit = ints.at(1) - ints.at(0);
     int index = 1;
     int counter = 0;
     size_t runningNumber = 0;
     size_t intendedSize = ints.size();
     for ( int vektorin_alkio : ints ) {
-        if ( runningNumber < intendedSize - 2 ) {
-            if ( vektorin_alkio + ints.at(index) != ints.at(index + 1) ) {
+        if ( runningNumber < intendedSize - 1 ) {
+            if ( ints.at(index) - vektorin_alkio != arit ) {
                 counter += 1;
             }
         }
