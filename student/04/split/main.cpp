@@ -26,6 +26,9 @@ std::vector< std::string > split(std::string text, char sep, bool no_empty=false
                 text.erase(0, i);
             } else if ( i == 0 ) {
                 separated_line.push_back("");
+                if ( text.length() == 1 ) {
+                    separated_line.push_back("");
+                }
             } else if ( i == std::string::npos ) {
                 separated_line.push_back(text.substr(0, text.length()));
             }
