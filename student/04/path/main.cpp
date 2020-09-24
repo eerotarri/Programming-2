@@ -62,6 +62,7 @@ void print(const vector< vector< Slot_type >>& g)
     cout << "===============" << endl;
 }
 
+
 // Converts the given numeric string to the corresponding integer
 // (by calling stoi).
 // If the given string is not numeric, returns 0.
@@ -86,7 +87,44 @@ unsigned int stoi_with_check(const string& str)
     }
 }
 
-// More functions
+
+// Turns the numbers in input into a vector
+// by searching the first separator (" ").
+// and saving everything before it to a vector.
+// Returns the vector containing the input values as strings.
+vector< string > split(string text)
+{
+    vector<string> separated_line = { };
+    string::size_type i = 0;
+
+    while ( text != "" ) {
+        i = text.find(" ");
+        if ( i != 0 ) {
+            separated_line.push_back(text.substr(0, i));
+            text.erase(0, i);
+        } else if ( i == string::npos ) {
+            separated_line.push_back(text.substr(0, text.length()));
+        }
+        text.erase(0, 1);
+    }
+    return separated_line;
+}
+
+
+// Takes the user input as parameter.
+// Turns the user input into a vector or integer values.
+// Returns the vector of input values.
+vector< int > get_input(string line)
+{
+    vector< string > separated = split(line);
+    vector< int > values;
+
+    for ( unsigned int i = 0; i < separated.size(); ++i ) {
+        values.push_back(stoi_with_check(separated.at(i)));
+    }
+    return values;
+}
+
 
 int main()
 {
@@ -97,11 +135,40 @@ int main()
         {UNUSED, EMPTY, UNUSED, UNUSED},
         {RED, RED, RED, RED}
     };
-
     print(playground);
-    cout << INPUT_TEXT << endl;
 
+    vector< int > values;
 
+    while ( true ) {
+        string line;
+        cout << INPUT_TEXT;
+        getline(cin, line);
 
+        values = get_input(line);
+
+        // Breaks the while loop if the input is "q".
+        if ( line == "q" ) {
+            break;
+        }
+
+        // Checks that the values are in range.
+        if ( values.at(0) <= 0 or values.at(0) > 4 or
+             values.at(1) <= 0 or values.at(1) > 5 or
+             values.at(2) <= 0 or values.at(2) > 4 or
+             values.at(3) <= 0 or values.at(3) > 5 ) {
+            cout << INVALID_POINT << endl;
+            continue;
+        }
+
+        // Checks if the given points are valid.
+        if ( playground.at(values.at(1) - 1).at(values.at(0) - 1) != GREEN and
+             playground.at(values.at(1) - 1).at(values.at(0) - 1) != RED ) {
+            cout << INVALID_POINT << endl;
+            continue;
+        } else if ( playground.at(values.at(3) - 1).at(values.at(2) - 1) != EMPTY ) {
+            cout << INVALID_POINT << endl;
+            continue;
+        }
+    }
     return 0;
 }
