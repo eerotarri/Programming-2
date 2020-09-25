@@ -169,10 +169,6 @@ bool is_clear_path(vector<vector<Slot_type>>& board, const vector< unsigned int 
         }
     }
 
-    for ( unsigned int i : input ) {
-        cout << i << endl;
-    }
-
     bool path_to_row;
     if ( input.at(1) == input.at(3) ) {
         // No need to move vertically
@@ -239,7 +235,9 @@ bool is_clear_path(vector<vector<Slot_type>>& board, const vector< unsigned int 
 // Will print out error and end function if the path is not clear.
 void move(vector<vector<Slot_type>>& board, const vector< unsigned int >& input)
 {
-    // Stub
+    Slot_type color = board.at(input.at(1) - 1).at(input.at(0) - 1);
+    board.at(input.at(1) - 1).at(input.at(0) - 1) = EMPTY;
+    board.at(input.at(3) - 1).at(input.at(2) - 1) = color;
 }
 
 
@@ -292,9 +290,10 @@ int main()
             if ( not is_clear_path(playground, values) ) {
                 continue;
             } else {
-                // move
+                move(playground, values);
             }
         }
+        print(playground);
     }
     return 0;
 }
