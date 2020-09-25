@@ -174,7 +174,8 @@ bool is_clear_path(vector<vector<Slot_type>>& board, const vector< unsigned int 
         // No need to move vertically
         path_to_row = true;
     } else if ( input.at(1) < input.at(3) ) {
-        // Go down. Iterates trough the spaces and returns false if at any point the path is blocked.
+        // Go down. Iterates trough the spaces and
+        // returns false if at any point the path is blocked.
         for ( unsigned int i = input.at(1); i <= input.at(3) - 1; ++i ) {
             if ( board.at(i).at(1) != EMPTY ) {
                 return false;
@@ -183,7 +184,8 @@ bool is_clear_path(vector<vector<Slot_type>>& board, const vector< unsigned int 
             }
         }
     } else {
-        // Go up. Iterates trough the spaces and returns false if at any point the path is blocked.
+        // Go up. Iterates trough the spaces and returns
+        // false if at any point the path is blocked.
         if ( input.at(1) - input.at(3) == 1 ) {
             path_to_row = true;
         } else {
@@ -250,9 +252,19 @@ int main()
         {UNUSED, EMPTY, UNUSED, UNUSED},
         {RED, RED, RED, RED}
     };
+
+    vector< vector< Slot_type > > finished = {
+        {RED, RED, RED, RED},
+        {UNUSED, EMPTY, UNUSED, UNUSED},
+        {UNUSED, EMPTY, EMPTY, UNUSED},
+        {UNUSED, EMPTY, UNUSED, UNUSED},
+        {GREEN, GREEN, GREEN, GREEN}
+    };
+
     print(playground);
 
     vector< unsigned int > values;
+    unsigned int moves = 0;
 
     while ( true ) {
         string line;
@@ -288,12 +300,19 @@ int main()
         } else {
             // Checks if there is a path from start to end.
             if ( not is_clear_path(playground, values) ) {
+                cout << CANNOT_MOVE << endl;
                 continue;
             } else {
                 move(playground, values);
+                moves += 1;
             }
         }
         print(playground);
+        if ( playground == finished ) {
+            cout << GAME_OVER << endl;
+            break;
+        }
     }
+    cout << moves << MOVES_MADE << endl;
     return 0;
 }
