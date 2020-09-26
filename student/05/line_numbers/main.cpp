@@ -15,20 +15,20 @@ int main()
     string output;
     cin >> output;
 
-    ofstream output_file(output);
 
     if ( input_file ) {
+        ofstream output_file(output);
         string line;
         int index = 1;
         while ( getline(input_file, line) ) {
             output_file << index << " " << line << endl;
             ++index;
+        output_file.close();
         }
     } else {
         cout << "Error! The file " << input << " cannot be opened." << endl;
         return EXIT_FAILURE;
     }
     input_file.close();
-    output_file.close();
     return 0;
 }
