@@ -23,8 +23,8 @@ int main()
         while ( getline(input_file, line) ) {
             output_file << index << " " << line << endl;
             ++index;
-        output_file.close();
         }
+        output_file.close();
     } else {
         cout << "Error! The file " << input << " cannot be opened." << endl;
         return EXIT_FAILURE;
