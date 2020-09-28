@@ -13,7 +13,7 @@ int main()
 
     ifstream input_file(file_name);
     if ( not input_file ) {
-        cout << "Error! The file  "<< file_name << " cannot be opened." << endl;
+        cout << "Error! The file "<< file_name << " cannot be opened." << endl;
         return EXIT_FAILURE;
     } else {
         string rivi;
