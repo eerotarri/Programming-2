@@ -38,23 +38,37 @@ int main()
                 if ( words.find(word) == words.end() ) {
                     words.insert( {word, {1, row}} );
                 } else {
-                    words.at(word).at(0) += 1;
-                    words.at(word).insert(words.at(word).end(), row);
+                    int index = 0;
+                    for ( size_t i = 1; i < words.at(word).size() - 1; ++i ) {
+                        if ( row == words.at(word).at(i) ) {
+                            index += 1;
+                            cout << "vittu" << endl;
+                        }
+                    }
+                    if ( index == 0 ) {
+                        words.at(word).at(0) += 1;
+                        words.at(word).insert(words.at(word).end(), row);
+                    }
                 }
             }
             ++row;
         }
         for ( auto avain : words ) {
+            // Add lines to the output
             string line;
+            int previous;
             for ( size_t i = 1; i < avain.second.size(); ++i ) {
-                if ( line != "" ) {
-                    line += ", ";
+                if ( previous == avain.second.at(i)) {
+                    avain.second.at(0) -= 1;
+                    continue;
+                } else {
+                    if ( line != "" ) {
+                        line += ", ";
+                    }
+                    line += to_string(avain.second.at(i));
                 }
-                line += to_string(avain.second.at(i));
+                previous = avain.second.at(i);
             }
-
-
-
             cout << avain.first << " " << avain.second.at(0) << ": " << line << endl;
         }
 
