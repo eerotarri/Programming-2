@@ -56,7 +56,7 @@ int main()
         for ( auto avain : words ) {
             // Add lines to the output
             string line;
-            int previous;
+            int previous = 0;
             for ( size_t i = 1; i < avain.second.size(); ++i ) {
                 if ( previous == avain.second.at(i)) {
                     avain.second.at(0) -= 1;
