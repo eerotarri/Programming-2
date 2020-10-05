@@ -6,9 +6,9 @@
 
 bool palindrome_recursive(std::string s)
 {
-    RECURSIVE_FUNC
-    // Do not remove RECURSIVE_FUNC declaration, it's necessary for automatic testing to work
-    // ------------
+  RECURSIVE_FUNC
+  // Do not remove RECURSIVE_FUNC declaration, it's necessary for automatic testing to work
+  // ------------
 
     int len = s.length();
     if ( len < 2 ) {
