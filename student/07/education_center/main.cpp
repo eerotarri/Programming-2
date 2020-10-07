@@ -36,7 +36,6 @@ struct Course {
     int enrollments;
 };
 
-// Implement the commands as functions
 string split(string& text)
 {
     string::size_type iter = text.find(";");
@@ -57,7 +56,7 @@ string split(string& text)
 
 int main()
 {
-    map< string, Course > centre;
+    map< string, vector< Course > > centre;
 
     string input;
     cout << "Input file: ";
@@ -81,20 +80,34 @@ int main()
             int enrollments = stoi(split(line));
             info = {theme, course_name, enrollments};
 
-            centre.insert( {location, info} );
-
-
-
+            // Inserts the information in to the data structure
+            // Creates new key if there is none for a location
+            if ( centre.find(location) == centre.end() ) {
+                centre.insert( {location, {info}} );
+            } else {
+                // Checks if the there are any overlapping
+                // courses and takes the last into account
+                int indicator = 0;
+                for ( Course& c : centre.at(location) ) {
+                    if ( theme ==  c.theme and course_name == c.name ) {
+                        c.enrollments = enrollments;
+                        ++indicator;
+                    }
+                }
+                if ( indicator == 0 ) {
+                    centre.at(location).push_back(info);
+                }
+            }
         }
-        map< string, Course >::iterator iter;
-        iter = centre.begin();
-        while ( iter != centre.end() ) {
-            cout << iter->first << iter->second.name << endl;
-            ++iter;
-        }
-
+//        map< string, vector< Course > >::iterator it = centre.begin();
+//        while ( it != centre.end() ) {
+//            cout << it->first << endl;
+//            for  ( Course alkio : centre.at(it->first) ) {
+//                cout << alkio.theme << " " << alkio.name << " " << alkio.enrollments << endl;
+//            }
+//            ++it;
+//        }
     }
-
     return 0;
 }
 
