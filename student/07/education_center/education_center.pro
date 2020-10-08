@@ -6,6 +6,4 @@ CONFIG -= qt
 SOURCES += \
         main.cpp
 
-DISTFILES += \
-    courses.input \
-    courses2.input
+DISTFILES +=

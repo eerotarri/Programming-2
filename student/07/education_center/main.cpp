@@ -1,16 +1,22 @@
 /* Education center
  *
  * Desc:
- *  This program generates a Path puzzle. The board is ROWS x COLUMNS (5x4),
- * and every round the player chooses a source point and a target point
- * (totally four numbers), making the given button to be moved to the target
- * position (if possible). The game checks if the user-given move can be made.
- *  At start all green buttons are on the top row, and all red buttons are on
- * the bottom row. Game will end when all green buttons have been moved to the
- * bottom row, and all red buttons to the top row. It is not allowed to move a
- * button over another button.
- *  When printing the game board, green button is represented by 'G', red
- * button by 'R', empty hole by 'o', and unused position by empty space.
+ *  This program generates enrollment tracking system for education center. It
+ * saves information from input file in to a data structure and iterates trough
+ * it according to given commands.
+ *  At start program asks user for an input file. Then user gives input
+ * parameters consiting of command and possible location and/or theme
+ * parameters. Program will print out wanted information.
+ *  Maximum amount of enrollments for one course is 50.
+ *  Commands:
+ * - quit: end the program.
+ * - locations: prints out all possible locations
+ * - courses <location> <theme>: prints all courses currently going on in given
+ *                               location and theme
+ * - available: prints out all available courses, which theme they belong in
+ *              and in what location they are in
+ * - courses_in_theme <theme>: prints out all courses belonging to a theme
+ * - favorite_theme: prints out most enrolled theme(s)
  *
  * Program author
  * Name: Eero Tarri
@@ -42,6 +48,16 @@ struct Course {
     int enrollments;
 };
 
+
+// Splits input from file to a word
+// Takes one line from input or substring of it and returns a word or all words
+// before delimiter ";".
+// Pararemeters:
+// - text: text to be split
+// Variables:
+// - iter: iterator to find the position of the first char ";"
+// Return value:
+// - word: first word of text
 string split_to_data(string& text)
 {
     string::size_type iter = text.find(";");
@@ -59,8 +75,20 @@ string split_to_data(string& text)
     return word;
 }
 
-
-vector< string > split_to_vector(const string& s, const char delimiter, bool ignore_empty=true)
+// Splits input string into a vector consisting of strings
+// Takes string as parameter to manipulate, delimiter to determine when to
+// cut the string and ingnore_empty to determine if empty string are to be
+// added to the vector. They are ignored by default.
+// Pararemeters:
+// - s: string to be split
+// - delimiter: char to cut the string with
+// Variables:
+// - tmp: temporary variable to hold the string or substrings in
+// - new_part: variable to store the first word in
+// Return value:
+// - result: vector consisting of input words
+vector< string > split_to_vector(const string& s,
+                                 const char delimiter, bool ignore_empty=true)
 {
     vector<string> result;
     string tmp = s;
@@ -72,9 +100,6 @@ vector< string > split_to_vector(const string& s, const char delimiter, bool ign
             result.push_back(new_part);
         }
         result.push_back(tmp.substr(1, tmp.size()-2));
-        for ( auto alkio : result ) {
-            cout << alkio << endl;
-        }
     // If there are no quotes proceeds normally
     } else {
         while(tmp.find(delimiter) != string::npos) {
@@ -91,7 +116,15 @@ vector< string > split_to_vector(const string& s, const char delimiter, bool ign
     return result;
 }
 
-
+// Checks if the input theme exists by iterating through all courses and
+// searching for user input theme
+// Parameters:
+// - m: data structure map for examination
+// - t: user input theme
+// Variables:
+// - found: number of times the theme was found
+// Return value:
+// - true if the theme exists and false otherwise
 bool search_for_theme(const map< string, vector< Course > >& m, string t)
 {
     int found = 0;
@@ -109,7 +142,9 @@ bool search_for_theme(const map< string, vector< Course > >& m, string t)
     }
 }
 
-
+// Prints all existing locations
+// Parameters:
+// - m: data structure map for examination
 void print_locations(const map< string, vector< Course > >& m)
 {
     for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
@@ -117,6 +152,9 @@ void print_locations(const map< string, vector< Course > >& m)
     }
 }
 
+// Prints courses and their enrollments
+// Parameters:
+// - c: Course for examination
 void print_courses(Course c)
 {
     if ( c.enrollments == 50 ) {
@@ -127,6 +165,12 @@ void print_courses(Course c)
 
 }
 
+// Prints all available courses in format:
+// "location : theme : course_name"
+// Parameters:
+// - m: data structure map for examination
+// Variables:
+// - output: vector of output lines
 void print_available(const map< string, vector< Course > >& m)
 {
     vector< string > output = {};
@@ -143,6 +187,11 @@ void print_available(const map< string, vector< Course > >& m)
     }
 }
 
+// Parameters:
+// - m: data structure map for examination
+// - t: user input theme
+// Variables:
+// - output: vector of output lines
 void print_courses_in_theme(const map< string, vector< Course > >& m, string t)
 {
     vector< string > output = {};
@@ -167,6 +216,18 @@ void print_courses_in_theme(const map< string, vector< Course > >& m, string t)
     }
 }
 
+// Prints most enrolled theme.
+// Works in four stages:
+// - First stage is making map of values
+// - Second stage is finding max value of those values
+// - Third stage is making vector of the themes that have the maximum values
+// - Fourth stage is printing the theme(s) and max value of total enrollments
+// Parameters:
+// - m: data structure map for examination
+// - t: user input theme
+// Variables:
+// - total_enrollments: map with themes as keys and total amount of enrollments
+//                      as values
 void print_favorite_theme(const map< string, vector< Course > >& m)
 {
     map< string, int > total_enrollments;
@@ -204,6 +265,10 @@ void print_favorite_theme(const map< string, vector< Course > >& m)
     }
 }
 
+// Main function that starts with opening an input file and reading its content
+// in to a data structure. After that function asks user for commands in a
+// while loop which start to call other functions.
+// Program ends with 'quit' function.
 int main()
 {
     map< string, vector< Course > > centre;
