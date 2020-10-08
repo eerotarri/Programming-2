@@ -25,6 +25,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -58,32 +59,148 @@ string split_to_data(string& text)
     return word;
 }
 
+
 vector< string > split_to_vector(const string& s, const char delimiter, bool ignore_empty=true)
 {
     vector<string> result;
     string tmp = s;
-
-    while(tmp.find(delimiter) != string::npos)
-    {
-        string new_part = tmp.substr(0, tmp.find(delimiter));
-        tmp = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-        if(not (ignore_empty and new_part.empty()))
-        {
+    // Checks first if quotes in string need to be examined
+    if ( (tmp.find("\"")!=string::npos) and (tmp.back() == '\"') ) {
+        for ( int i = 0; i < 2; ++i ) {
+            string new_part = tmp.substr(0, tmp.find(delimiter));
+            tmp = tmp.substr(tmp.find(delimiter)+1, tmp.size());
             result.push_back(new_part);
         }
+        result.push_back(tmp.substr(1, tmp.size()-2));
+        for ( auto alkio : result ) {
+            cout << alkio << endl;
+        }
+    // If there are no quotes proceeds normally
+    } else {
+        while(tmp.find(delimiter) != string::npos) {
+            string new_part = tmp.substr(0, tmp.find(delimiter));
+            tmp = tmp.substr(tmp.find(delimiter)+1, tmp.size());
+            if(not (ignore_empty and new_part.empty())) {
+                result.push_back(new_part);
+            }
+        }
+        if(not (ignore_empty and tmp.empty())) {
+            result.push_back(tmp);
+        }
     }
-    if(not (ignore_empty and tmp.empty()))
-    {
-        result.push_back(tmp);
-    }
-
     return result;
 }
+
+
+bool search_for_theme(const map< string, vector< Course > >& m, string t)
+{
+    int found = 0;
+    for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
+        for ( Course c : it->second ) {
+            if (c.theme == t) {
+                ++found;
+            }
+        }
+    }
+    if ( found == 0 ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 
 void print_locations(const map< string, vector< Course > >& m)
 {
     for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
         cout << it->first << endl;
+    }
+}
+
+void print_courses(Course c)
+{
+    if ( c.enrollments == 50 ) {
+        cout << c.name << " --- full" << endl;
+    } else {
+        cout << c.name << " --- " << c.enrollments << " enrollments" << endl;
+    }
+
+}
+
+void print_available(const map< string, vector< Course > >& m)
+{
+    vector< string > output = {};
+    for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
+        for ( Course c : it->second ) {
+            if ( c.enrollments != 50 ) {
+                output.push_back(it->first + " : " + c.theme + " : " + c.name);
+            }
+        }
+    }
+    sort(output.begin(), output.end());
+    for ( string line : output ) {
+        cout << line << endl;
+    }
+}
+
+void print_courses_in_theme(const map< string, vector< Course > >& m, string t)
+{
+    vector< string > output = {};
+    for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
+        for ( Course c : it->second ) {
+            if ( c.theme == t ) {
+                int i = 0;
+                for ( string s : output ) {
+                    if ( s == c.name ) {
+                        ++i;
+                    }
+                }
+                if ( i == 0 ) {
+                    output.push_back(c.name);
+                }
+            }
+        }
+    }
+    sort(output.begin(), output.end());
+    for ( string line : output ) {
+        cout << line << endl;
+    }
+}
+
+void print_favorite_theme(const map< string, vector< Course > >& m)
+{
+    map< string, int > total_enrollments;
+    for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
+        for ( Course c : it->second ) {
+            if ( total_enrollments.find(c.theme) == total_enrollments.end() ) {
+                total_enrollments.insert( {c.theme, c.enrollments} );
+            } else {
+                total_enrollments.at(c.theme) += c.enrollments;
+            }
+        }
+    }
+    int max_value = -1;
+    for ( map< string, int >::const_iterator it = total_enrollments.begin();
+          it != total_enrollments.end(); ++it ) {
+        if ( max_value <= it->second ) {
+            max_value = it->second;
+        }
+    }
+    // Find which themes have the max values
+    vector< string > max_theme;
+    for ( map< string, int >::const_iterator it = total_enrollments.begin();
+          it != total_enrollments.end(); ++it) {
+        if ( it->second == max_value ) {
+            max_theme.push_back(it->first);
+        }
+    }
+    if ( max_theme.empty() ) {
+        cout << "No enrollments" << endl;
+    } else {
+        cout << max_value << " enrollments in themes" << endl;
+        for ( string theme : max_theme ) {
+            cout << "--- " << theme << endl;
+        }
     }
 }
 
@@ -137,14 +254,21 @@ int main()
                 }
             }
         }
+        input_file.close();
 
-        // HERE STARTS THE USER INTERFACE
+        // Initial user input. Takes needed commands to start to start loop
         string user_input;
         cout << "> ";
         getline(cin, user_input);
         vector< string > commands = split_to_vector(user_input, ' ');
         string command = commands.at(0);
 
+        // Looping user interface that will loop until given gomman "quit"
+        // Command "locations" prints all locations
+        // "courses" prints searched courses and how many participants it has
+        // "availanle" prints all courses that are not full
+        // "courses_in_theme" prints all possible courses in searched theme
+        // "favourite_theme" prints the theme with most participants
         while ( command != "quit" ) {
             if ( command == "locations" ) {
                 print_locations(centre);
@@ -155,18 +279,22 @@ int main()
                     // Check for unknown location
                     if ( centre.find(commands.at(1)) == centre.end() ) {
                         cout << UNKNOWN_LOCATION << endl;
+                    } else if ( search_for_theme(centre, commands.at(2)) ) {
+                        cout << UNKNOWN_THEME << endl;
                     } else {
                         for ( Course c : centre.at(commands.at(1)) ) {
-                            // KÄY PASKAT LÄPI
+                            if ( c.theme == commands.at(2) ) {
+                                print_courses(c);
+                            }
                         }
                     }
                 }
             } else if ( command == "available" ) {
-                // Do stuff
+                print_available(centre);
             } else if ( command == "courses_in_theme" ) {
-                // Do stuff
+                print_courses_in_theme(centre, commands.at(1));
             } else if ( command == "favorite_theme" ) {
-                // Do stuff
+                print_favorite_theme(centre);
             } else {
                 cout << UNKNOWN_COMMAND << command << endl;
             }
@@ -176,19 +304,6 @@ int main()
             commands = split_to_vector(user_input, ' ');
             command = commands.at(0);
         }
-
-
-
-
-
-//        map< string, vector< Course > >::iterator it = centre.begin();
-//        while ( it != centre.end() ) {
-//            cout << it->first << endl;
-//            for  ( Course alkio : centre.at(it->first) ) {
-//                cout << alkio.theme << " " << alkio.name << " " << alkio.enrollments << endl;
-//            }
-//            ++it;
-//        }
     }
     return 0;
 }
