@@ -28,7 +28,12 @@
 
 using namespace std;
 
-const string ERROR_TEXT = "Error: the input file cannot be opened";
+const string FILE_ERROR = "Error: the input file cannot be opened";
+const string UNKNOWN_COMMAND = "Error: Unknown command: ";
+const string PARAMETER_ERROR = "Error: error in command ";
+const string UNKNOWN_LOCATION = "Error: unknown location name";
+const string UNKNOWN_THEME = "Error: unknown theme";
+const string EMPTY_FIELD = "Error: empty field";
 
 struct Course {
     string theme;
@@ -36,7 +41,7 @@ struct Course {
     int enrollments;
 };
 
-string split(string& text)
+string split_to_data(string& text)
 {
     string::size_type iter = text.find(";");
     string word;
@@ -53,6 +58,34 @@ string split(string& text)
     return word;
 }
 
+vector< string > split_to_vector(const string& s, const char delimiter, bool ignore_empty=true)
+{
+    vector<string> result;
+    string tmp = s;
+
+    while(tmp.find(delimiter) != string::npos)
+    {
+        string new_part = tmp.substr(0, tmp.find(delimiter));
+        tmp = tmp.substr(tmp.find(delimiter)+1, tmp.size());
+        if(not (ignore_empty and new_part.empty()))
+        {
+            result.push_back(new_part);
+        }
+    }
+    if(not (ignore_empty and tmp.empty()))
+    {
+        result.push_back(tmp);
+    }
+
+    return result;
+}
+
+void print_locations(const map< string, vector< Course > >& m)
+{
+    for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
+        cout << it->first << endl;
+    }
+}
 
 int main()
 {
@@ -64,7 +97,7 @@ int main()
 
     ifstream input_file(input);
     if ( !input_file ) {
-        cout << ERROR_TEXT << endl;
+        cout << FILE_ERROR << endl;
         return EXIT_FAILURE;
     } else {
         // Read lines over input data and save to "centre"
@@ -74,31 +107,80 @@ int main()
         string line;
         Course info;
         while ( getline(input_file, line) ) {
-            string location = split(line);
-            string theme = split(line);
-            string course_name = split(line);
-            int enrollments = stoi(split(line));
-            info = {theme, course_name, enrollments};
-
-            // Inserts the information in to the data structure
-            // Creates new key if there is none for a location
-            if ( centre.find(location) == centre.end() ) {
-                centre.insert( {location, {info}} );
+            if ( split_to_vector(line, ';').size() != 4 ) {
+                cout << EMPTY_FIELD << endl;
+                return EXIT_FAILURE;
             } else {
-                // Checks if the there are any overlapping
-                // courses and takes the last into account
-                int indicator = 0;
-                for ( Course& c : centre.at(location) ) {
-                    if ( theme ==  c.theme and course_name == c.name ) {
-                        c.enrollments = enrollments;
-                        ++indicator;
+                string location = split_to_data(line);
+                string theme = split_to_data(line);
+                string course_name = split_to_data(line);
+                int enrollments = stoi(split_to_data(line));
+                info = {theme, course_name, enrollments};
+
+                // Inserts the information in to the data structure
+                // Creates new key if there is none for a location
+                if ( centre.find(location) == centre.end() ) {
+                    centre.insert( {location, {info}} );
+                } else {
+                    // Checks if the there are any overlapping
+                    // courses and takes the last into account
+                    int indicator = 0;
+                    for ( Course& c : centre.at(location) ) {
+                        if ( theme ==  c.theme and course_name == c.name ) {
+                            c.enrollments = enrollments;
+                            ++indicator;
+                        }
                     }
-                }
-                if ( indicator == 0 ) {
-                    centre.at(location).push_back(info);
+                    if ( indicator == 0 ) {
+                        centre.at(location).push_back(info);
+                    }
                 }
             }
         }
+
+        // HERE STARTS THE USER INTERFACE
+        string user_input;
+        cout << "> ";
+        getline(cin, user_input);
+        vector< string > commands = split_to_vector(user_input, ' ');
+        string command = commands.at(0);
+
+        while ( command != "quit" ) {
+            if ( command == "locations" ) {
+                print_locations(centre);
+            } else if ( command == "courses" ) {
+                if ( commands.size() != 3 ) {
+                    cout << PARAMETER_ERROR << command << endl;
+                } else {
+                    // Check for unknown location
+                    if ( centre.find(commands.at(1)) == centre.end() ) {
+                        cout << UNKNOWN_LOCATION << endl;
+                    } else {
+                        for ( Course c : centre.at(commands.at(1)) ) {
+                            // KÄY PASKAT LÄPI
+                        }
+                    }
+                }
+            } else if ( command == "available" ) {
+                // Do stuff
+            } else if ( command == "courses_in_theme" ) {
+                // Do stuff
+            } else if ( command == "favorite_theme" ) {
+                // Do stuff
+            } else {
+                cout << UNKNOWN_COMMAND << command << endl;
+            }
+            // Get new input
+            cout << "> ";
+            getline(cin, user_input);
+            commands = split_to_vector(user_input, ' ');
+            command = commands.at(0);
+        }
+
+
+
+
+
 //        map< string, vector< Course > >::iterator it = centre.begin();
 //        while ( it != centre.end() ) {
 //            cout << it->first << endl;
