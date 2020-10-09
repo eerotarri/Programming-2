@@ -128,7 +128,9 @@ vector< string > split_to_vector(const string& s,
 bool search_for_theme(const map< string, vector< Course > >& m, string t)
 {
     int found = 0;
-    for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
+    for ( map< string, vector< Course >>::const_iterator it = m.begin();
+          it != m.end(); ++it ) {
+
         for ( Course c : it->second ) {
             if (c.theme == t) {
                 ++found;
@@ -147,22 +149,40 @@ bool search_for_theme(const map< string, vector< Course > >& m, string t)
 // - m: data structure map for examination
 void print_locations(const map< string, vector< Course > >& m)
 {
-    for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
+    for ( map< string, vector< Course >>::const_iterator it = m.begin();
+          it != m.end(); ++it ) {
+
         cout << it->first << endl;
     }
 }
 
-// Prints courses and their enrollments
+// Prints courses and their enrollments by storing each line to be output in to
+// vector and sorting that vector. Courses will be in alphabetical order.
 // Parameters:
-// - c: Course for examination
-void print_courses(Course c)
+// - m: data structure map for examination
+// - loc: user input for location
+// - theme: user input for theme
+// Variables:
+// - line: for storing string lines to be output
+// - output: vector to store the lines in
+void print_courses(const map< string, vector< Course > >& m, string loc, string theme)
 {
-    if ( c.enrollments == 50 ) {
-        cout << c.name << " --- full" << endl;
-    } else {
-        cout << c.name << " --- " << c.enrollments << " enrollments" << endl;
+    string line;
+    vector< string > output;
+    for ( Course c : m.at(loc) ) {
+        if ( c.theme == theme ) {
+            if ( c.enrollments == 50 ) {
+                line = c.name + " --- full";
+            } else {
+                line = c.name + " --- " + to_string(c.enrollments) + " enrollments";
+            }
+            output.push_back(line);
+        }
     }
-
+    sort(output.begin(), output.end());
+    for ( string s : output ) {
+        cout << s << endl;
+    }
 }
 
 // Prints all available courses in format:
@@ -174,7 +194,9 @@ void print_courses(Course c)
 void print_available(const map< string, vector< Course > >& m)
 {
     vector< string > output = {};
-    for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
+    for ( map< string, vector< Course >>::const_iterator it = m.begin();
+          it != m.end(); ++it ) {
+
         for ( Course c : it->second ) {
             if ( c.enrollments != 50 ) {
                 output.push_back(it->first + " : " + c.theme + " : " + c.name);
@@ -195,7 +217,9 @@ void print_available(const map< string, vector< Course > >& m)
 void print_courses_in_theme(const map< string, vector< Course > >& m, string t)
 {
     vector< string > output = {};
-    for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
+    for ( map< string, vector< Course >>::const_iterator it = m.begin();
+          it != m.end(); ++it ) {
+
         for ( Course c : it->second ) {
             if ( c.theme == t ) {
                 int i = 0;
@@ -231,7 +255,9 @@ void print_courses_in_theme(const map< string, vector< Course > >& m, string t)
 void print_favorite_theme(const map< string, vector< Course > >& m)
 {
     map< string, int > total_enrollments;
-    for ( map< string, vector< Course >>::const_iterator it = m.begin(); it != m.end(); ++it ) {
+    for ( map< string, vector< Course >>::const_iterator it = m.begin();
+          it != m.end(); ++it ) {
+
         for ( Course c : it->second ) {
             if ( total_enrollments.find(c.theme) == total_enrollments.end() ) {
                 total_enrollments.insert( {c.theme, c.enrollments} );
@@ -285,7 +311,7 @@ int main()
         // Read lines over input data and save to "centre"
         // in format centre.at(location).theme = theme_of_the_course
         // centre.at(location).name = name_of_the_course
-        // centre.at(location).enrollments = amount_of_enrollments_in_the_course
+        // centre.at(location).enrollments = amount_of_enrollments
         string line;
         Course info;
         while ( getline(input_file, line) ) {
@@ -347,17 +373,17 @@ int main()
                     } else if ( search_for_theme(centre, commands.at(2)) ) {
                         cout << UNKNOWN_THEME << endl;
                     } else {
-                        for ( Course c : centre.at(commands.at(1)) ) {
-                            if ( c.theme == commands.at(2) ) {
-                                print_courses(c);
-                            }
-                        }
+                        print_courses(centre, commands.at(1), commands.at(2));
                     }
                 }
             } else if ( command == "available" ) {
                 print_available(centre);
             } else if ( command == "courses_in_theme" ) {
-                print_courses_in_theme(centre, commands.at(1));
+                if ( search_for_theme(centre, commands.at(1)) ) {
+                    cout << UNKNOWN_THEME << endl;
+                } else {
+                    print_courses_in_theme(centre, commands.at(1));
+                }
             } else if ( command == "favorite_theme" ) {
                 print_favorite_theme(centre);
             } else {
