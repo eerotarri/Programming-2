@@ -39,7 +39,7 @@ int main()
         cout << "Error: Expression must start with a number" << endl;
         return EXIT_FAILURE;
     } else if ( digits - operators < 1 ) {
-        cout << "Error: Too few opernds" << endl;
+        cout << "Error: Too few operands" << endl;
         return EXIT_FAILURE;
     } else if ( digits - operators > 1 ) {
         cout << "Error: Too few operators" << endl;
