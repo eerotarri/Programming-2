@@ -29,9 +29,9 @@ void reverse(int* leftptr, int* rightptr)
 {
     while (leftptr < rightptr)
     {
-        int temp = *(leftptr-1);
-        *(leftptr-1) = *rightptr;
-        *rightptr = temp;
+        int temp = *leftptr;
+        *leftptr = *(rightptr-1);
+        *(rightptr-1) = temp;
         ++leftptr;
         --rightptr;
     }
