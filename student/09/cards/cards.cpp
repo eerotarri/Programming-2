@@ -109,12 +109,14 @@ bool Cards::top_to_bottom()
 
     Card_data* new_item = new Card_data{item_to_shift, nullptr};
 
-    while ( true ) {
+    int i = 0;
+    while ( i < 200 ) {
         if ( first->next == nullptr ) {
             first->next = new_item;
             break;
         } else {
             first = first->next;
+            ++i;
         }
     }
 
