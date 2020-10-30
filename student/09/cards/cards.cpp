@@ -107,7 +107,7 @@ bool Cards::top_to_bottom()
     delete first;
 
     Card_data* new_item = new Card_data{item_to_shift, nullptr};
-    Card_data* last_item;
+    Card_data* last_item = nullptr;
 
     first = top_;
 
