@@ -46,10 +46,12 @@ bool Cards::remove(int &id)
 
     Card_data* item_to_remove = top_;
 
-    if ( top_->next == nullptr ) {
-        top_ = nullptr;
-    } else {
-        top_ = top_->next;
+    if ( top_->data == id ) {
+        if ( top_->next == nullptr ) {
+            top_ = nullptr;
+        } else {
+            top_ = top_->next;
+        }
     }
 
     delete item_to_remove;
@@ -60,15 +62,18 @@ bool Cards::remove(int &id)
 bool Cards::bottom_to_top()
 {
     // Stub
+    return true;
 }
 
 bool Cards::top_to_bottom()
 {
     // Stub
+    return true;
 }
 
 void Cards::print_from_bottom_to_top(std::ostream &s)
 {
     // Stub
+    s << "\n";
 }
 
