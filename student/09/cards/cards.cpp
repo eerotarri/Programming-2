@@ -1,4 +1,5 @@
 #include "cards.hh"
+#include <iostream>
 
 // TODO: Implement the methods here
 
@@ -65,15 +66,58 @@ bool Cards::bottom_to_top()
         return false;
     }
 
-//    Card_data* start = top_;
-//    Card_data* end;
+    Card_data* start = top_;
+    Card_data* last;
+    int last_data;
+
+    while ( start != nullptr ) {
+        if ( start->next == nullptr ) {
+            last_data = start->data;
+            last = start;
+        }
+        start = start->next;
+    }
+
+    Card_data* new_item = new Card_data{last_data, top_};
+    top_ = new_item;
+
+    start = top_;
+
+    while ( start != nullptr ) {
+        if ( start->next == last ) {
+            start->next = nullptr;
+        } else {
+            start = start->next;
+        }
+    }
+    delete last;
 
     return true;
 }
 
 bool Cards::top_to_bottom()
 {
-    // Stub
+    if ( top_ == nullptr ) {
+        return false;
+    }
+
+    int item_to_shift = top_->data;
+
+    remove(item_to_shift);
+
+    Card_data* first = top_;
+
+    Card_data* new_item = new Card_data{item_to_shift, nullptr};
+
+    while ( true ) {
+        if ( first->next == nullptr ) {
+            first->next = new_item;
+            break;
+        } else {
+            first = first->next;
+        }
+    }
+
     return true;
 }
 
