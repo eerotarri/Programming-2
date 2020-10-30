@@ -97,27 +97,29 @@ bool Cards::bottom_to_top()
 
 bool Cards::top_to_bottom()
 {
-//    if ( top_ == nullptr ) {
-//        return false;
-//    }
+    if ( top_ == nullptr ) {
+        return false;
+    }
 
-//    int item_to_shift = top_->data;
+    Card_data* first = top_;
+    int item_to_shift = top_->data;
+    top_ = top_->next;
+    delete first;
 
-//    remove(item_to_shift);
+    Card_data* new_item = new Card_data{item_to_shift, nullptr};
+    Card_data* last_item;
 
-//    Card_data* first = top_;
-//    std::cout << top_->data;
+    first = top_;
 
-//    Card_data* new_item = new Card_data{item_to_shift, nullptr};
-
-//    while ( true) {
-//        if ( first->next == nullptr ) {
-//            first->next = new_item;
-//            break;
-//        } else {
-//            first = first->next;
-//        }
-//    }
+    while ( first != nullptr ) {
+        if ( first->next == nullptr ) {
+            last_item = first;
+        }
+        first = first->next;
+    }
+    std::cout << last_item->data << std::endl;
+    std::cout << new_item->data << std::endl;
+    last_item->next = new_item;
 
     return true;
 }
