@@ -117,8 +117,7 @@ bool Cards::top_to_bottom()
         }
         first = first->next;
     }
-    std::cout << last_item->data << std::endl;
-    std::cout << new_item->data << std::endl;
+
     last_item->next = new_item;
 
     return true;
