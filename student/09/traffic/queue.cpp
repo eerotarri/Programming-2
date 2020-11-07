@@ -94,9 +94,7 @@ void Queue::switch_light()
             car = first_;
         }
         cout << " can go on" << endl;
-        if ( rounds_ == cycle_ ) {
-            is_green_ = false;
-        }
+        is_green_ = false;
 
     } else {
         if ( is_green_ ) {
@@ -107,10 +105,10 @@ void Queue::switch_light()
     }
 }
 
-//void Queue::reset_cycle(unsigned int cycle)
-//{
-//    // Stub
-//}
+void Queue::reset_cycle(unsigned int cycle)
+{
+    cycle_ = cycle;
+}
 
 void Queue::print()
 {

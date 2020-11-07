@@ -18,7 +18,7 @@ public:
     // Inserts a vehicle, the register number of which is reg, to the queue.
     void enqueue(string reg);
 
-    void dequeue();
+
 
     // Switches the color of traffic light from green to red or vice versa.
     // If the new color is green, lets at least <cycle_> vehicles
@@ -27,7 +27,7 @@ public:
     void switch_light();
 
     // Resets the attribute cycle_.
-    // void reset_cycle(unsigned int cycle);
+    void reset_cycle(unsigned int cycle);
 
     // Prints the color of traffic light and the register numbers of those
     // cars that are waiting in the traffic light queue (if any).
@@ -39,6 +39,8 @@ private:
         string reg_num;
         Vehicle* next;
     };
+
+    void dequeue();
 
     // Pointer to the first vehicle in the traffic light queue
     Vehicle* first_ = nullptr;

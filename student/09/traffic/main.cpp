@@ -22,16 +22,16 @@ int main()
             q.print();
         } else if ( choice == "s" ) {
             q.switch_light();
-//        } else if ( choice == "r" ) {
-//            cout << "  Input a new a amount for cycle: ";
-//            unsigned int cycle = 0;
-//            cin >> cycle;
-//            // Ensuring that the cycle is not too small
-//            if(cycle < 1) {
-//                cout << "Too small value, using 1 instead" << endl;
-//                cycle = 1;
-//            }
-//            q.reset_cycle(cycle);
+        } else if ( choice == "r" ) {
+            cout << "  Input a new a amount for cycle: ";
+            unsigned int cycle = 0;
+            cin >> cycle;
+            // Ensuring that the cycle is not too small
+            if(cycle < 1) {
+                cout << "Too small value, using 1 instead" << endl;
+                cycle = 1;
+            }
+            q.reset_cycle(cycle);
         } else if ( choice == "q" ) {
             break;
         } else {
