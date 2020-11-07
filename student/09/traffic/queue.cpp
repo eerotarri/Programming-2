@@ -109,7 +109,12 @@ void Queue::switch_light()
 void Queue::reset_cycle(unsigned int cycle)
 {
     cycle_ = cycle;
-    rounds_ = 0;
+    if ( is_green_ ) {
+        rounds_ = 0;
+    } else {
+        rounds_ = cycle_;
+    }
+
 }
 
 void Queue::print()
