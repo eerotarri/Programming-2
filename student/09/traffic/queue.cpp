@@ -34,7 +34,7 @@ void Queue::enqueue(string reg)
              << " need not to stop" << endl;
         dequeue();
         rounds_ += 1;
-        if ( rounds_ == cycle_p ) {
+        if ( rounds_ == cycle_ ) {
             is_green_ = false;
         }
     }
@@ -107,10 +107,10 @@ void Queue::switch_light()
     }
 }
 
-void Queue::reset_cycle(unsigned int cycle)
-{
-    // Stub
-}
+//void Queue::reset_cycle(unsigned int cycle)
+//{
+//    // Stub
+//}
 
 void Queue::print()
 {

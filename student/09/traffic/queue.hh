@@ -27,7 +27,7 @@ public:
     void switch_light();
 
     // Resets the attribute cycle_.
-    void reset_cycle(unsigned int cycle);
+    // void reset_cycle(unsigned int cycle);
 
     // Prints the color of traffic light and the register numbers of those
     // cars that are waiting in the traffic light queue (if any).
