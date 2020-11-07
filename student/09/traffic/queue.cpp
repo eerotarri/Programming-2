@@ -31,7 +31,7 @@ void Queue::enqueue(string reg)
 
     if ( rounds_ < cycle_ ) {
         cout << "GREEN: The vehicle " << new_car->reg_num
-             << " need not to stop to wait" << endl;
+             << " need not stop to wait" << endl;
         dequeue();
         rounds_ += 1;
         if ( rounds_ == cycle_ ) {
