@@ -54,7 +54,7 @@ private:
     // The number of vehicles that can pass the traffic lights during
     // the same green period
     unsigned int cycle_;
-    unsigned int rounds_;
+    unsigned int rounds_ = 0;
 
     // You can define more private features here
 

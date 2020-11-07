@@ -31,7 +31,7 @@ void Queue::enqueue(string reg)
 
     if ( rounds_ < cycle_ ) {
         cout << "GREEN: The vehicle " << new_car->reg_num
-             << " need not to stop" << endl;
+             << " need not to stop to wait" << endl;
         dequeue();
         rounds_ += 1;
         if ( rounds_ == cycle_ ) {
@@ -101,6 +101,7 @@ void Queue::switch_light()
             cout << "GREEN: No vehicles waiting in traffic lights" << endl;
         } else {
             cout << "RED: No vehicles waiting in traffic lights" << endl;
+            rounds_ = cycle_;
         }
     }
 }
@@ -108,6 +109,7 @@ void Queue::switch_light()
 void Queue::reset_cycle(unsigned int cycle)
 {
     cycle_ = cycle;
+    rounds_ = 0;
 }
 
 void Queue::print()
