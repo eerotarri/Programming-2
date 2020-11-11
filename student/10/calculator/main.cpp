@@ -104,11 +104,11 @@ int main() {
                     return 0;
                 } else {
                     if ( pieces.size() - 1 != s.parameter_number ) {
-                        cout << "Error: wrong number of parameters" << endl;
+                        cout << "Error: wrong number of parameters." << endl;
                     } else {
                         if ( !string_to_double(pieces.at(1), first) or
                              !string_to_double(pieces.at(2), second ) ) {
-                            cout << "Error: a non-number operand" << endl;
+                            cout << "Error: a non-number operand." << endl;
                             continue;
                         }
                         cout << s.action(first, second) << endl;
@@ -117,7 +117,7 @@ int main() {
             }
         }
         if ( !is_command ) {
-            cout << "Error: unknown command" << endl;
+            cout << "Error: unknown command." << endl;
         }
     }
 }
