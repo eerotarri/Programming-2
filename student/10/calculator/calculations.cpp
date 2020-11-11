@@ -19,3 +19,12 @@ double multiplication(double left, double right) {
 double division(double left, double right) {
     return left / right;
 }
+
+
+double power(double left, double right) {
+    double p = left;
+    for ( int i = 1; i < right; ++i ) {
+        p *= left;
+    }
+    return p;
+}
