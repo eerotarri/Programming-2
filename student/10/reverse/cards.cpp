@@ -45,6 +45,10 @@ bool Cards::remove(int &id)
 
 void Cards::reverse()
 {
+    if ( top_ == nullptr || top_->next == nullptr ) {
+        return;
+    }
+
     std::shared_ptr<Card_data> prev;
     std::shared_ptr<Card_data> current = top_->next;
     std::shared_ptr<Card_data> next = current->next;
