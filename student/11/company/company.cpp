@@ -1,4 +1,4 @@
-﻿#include "company.hh"
+#include "company.hh"
 
 Company::Company()
 {
@@ -59,17 +59,65 @@ void Company::printBoss(const std::string &id, std::ostream &output) const
 
 void Company::printSubordinates(const std::string &id, std::ostream &output) const
 {
-
+    size_t v_size = getPointer(id)->subordinates_.size();
+    if (v_size == 0) {
+        output << id << " has no subordinates." << std::endl;
+    } else {
+        output << id << " has " << v_size << " subordinates:" << std::endl;
+        for (Employee* sub : sortByID(getPointer(id)->subordinates_)) {
+            output << sub->id_ << std::endl;
+        }
+    }
 }
 
 void Company::printColleagues(const std::string &id, std::ostream &output) const
 {
-
+    if (getPointer(id)->boss_ == nullptr) {
+        output << id << " has no colleagues." << std::endl;
+    } else {
+        size_t v_size = getPointer(id)->boss_->subordinates_.size();
+        if (v_size == 0) {
+            output << id << " has no colleagues." << std::endl;
+        } else {
+            output << id << " has " << v_size-1 << " colleagues:" << std::endl;
+            for (Employee* sub : sortByID(getPointer(id)->boss_->subordinates_)) {
+                if (sub->id_ != id) {
+                     output << sub->id_ << std::endl;
+                }
+            }
+        }
+    }
 }
 
 void Company::printDepartment(const std::string &id, std::ostream &output) const
 {
+    Employee* boss_of_hierarchy = getPointer(id);
+    std::vector<Employee*> colleagues;
 
+    // Checks who is the highest ranking boss in the department
+    while (boss_of_hierarchy->department_ == getPointer(id)->department_ &&
+           boss_of_hierarchy->boss_ != nullptr) {
+
+        if (boss_of_hierarchy->boss_->department_ == boss_of_hierarchy->department_) {
+            boss_of_hierarchy = boss_of_hierarchy->boss_;
+        } else {
+            break;
+        }
+    }
+
+    colleagues.push_back(boss_of_hierarchy);
+    addSubordinates(colleagues, boss_of_hierarchy);
+
+    if (colleagues.size() == 1) {
+        output << id << " has no department colleagues." << std::endl;
+    } else {
+        output << id << " has " << colleagues.size()-1 << " department colleagues:" << std::endl;
+        for (auto e : sortByID(colleagues)) {
+            if (e->id_ != id) {
+                output << e->id_ << std::endl;
+            }
+        }
+    }
 }
 
 void Company::printLongestTimeInLineManagement(const std::string &id, std::ostream &output) const
@@ -165,4 +213,14 @@ std::vector<Employee*> Company::sortByID(const std::vector<Employee*>& container
         ids.erase(ids.find(first_value));
     }
     return sorted_container;
+}
+
+void Company::addSubordinates(std::vector<Employee*>& container, Employee* boss) const
+{
+    if (boss->subordinates_.size() != 0) {
+        for (auto sub : boss->subordinates_) {
+            container.push_back(sub);
+            addSubordinates(container, sub);
+        }
+    }
 }
