@@ -13,15 +13,7 @@ Company::~Company()
 void Company::addNewEmployee(const std::string &id, const std::string &dep,
                              const double &time, std::ostream &output)
 {
-    std::map<std::string, Employee*>::iterator it;
-    // Check if the employee already exists
-    bool employee_exists = false;
-    for (it = employees_.begin(); it != employees_.end(); it++) {
-        if ( it->first == id ) {
-            employee_exists = true;
-        }
-    }
-    if (employee_exists) {
+    if (employee_exists(id)) {
         output << "Error. Employee already added." << std::endl;
     } else {
         Employee* new_employee = new Employee{};
@@ -39,7 +31,20 @@ void Company::printEmployees(std::ostream &output) const
 
 void Company::addRelation(const std::string &subordinate, const std::string &boss, std::ostream &output)
 {
+    Employee* boss_object = nullptr;
+    Employee* employee_object = nullptr;
+    if (employee_exists(boss)){
+        for (auto it = employees_.begin(); it != employees_.end(); it++) {
+            if (it->first == subordinate) {
+                employee_object = it->second;
+            } else if (it->first == boss) {
+                boss_object = it->second;
+            }
+        }
+        employee_object->boss_ = boss_object;
+        boss_object->subordinates_.push_back(employee_object);
 
+    }
 }
 
 void Company::printBoss(const std::string &id, std::ostream &output) const
@@ -100,4 +105,19 @@ IdSet Company::VectorToIdSet(const std::vector<Employee *> &container) const
 void Company::printGroup(const std::string &id, const std::string &group, const IdSet &container, std::ostream &output) const
 {
 
+}
+
+bool Company::employee_exists(const std::string& id) const
+{
+    std::map<std::string, Employee*>::const_iterator it;
+    bool exists = false;
+
+    // Check if the employee already exists
+    for (it = employees_.begin(); it != employees_.end(); it++) {
+        if (it->first == id) {
+            exists = true;
+        }
+    }
+
+    return exists;
 }
