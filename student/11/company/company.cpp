@@ -53,7 +53,7 @@ void Company::printBoss(const std::string &id, std::ostream &output) const
         Employee* employee_object_ptr = getPointer(id);
 
         if (employee_object_ptr->boss_ == nullptr) {
-            output << employee_object_ptr->id_ << " has no bosses:" << std::endl;
+            output << employee_object_ptr->id_ << " has no bosses." << std::endl;
         } else {
             output << employee_object_ptr->id_ << " has 1 bosses:" << std::endl;
             output << employee_object_ptr->boss_->id_ << std::endl;
@@ -63,13 +63,17 @@ void Company::printBoss(const std::string &id, std::ostream &output) const
 
 void Company::printSubordinates(const std::string &id, std::ostream &output) const
 {
-    size_t v_size = getPointer(id)->subordinates_.size();
-    if (v_size == 0) {
-        output << id << " has no subordinates." << std::endl;
+    if (!employeeExists(id)) {
+        printNotFound(id, output);
     } else {
-        output << id << " has " << v_size << " subordinates:" << std::endl;
-        for (Employee* sub : sortByID(getPointer(id)->subordinates_)) {
-            output << sub->id_ << std::endl;
+        size_t v_size = getPointer(id)->subordinates_.size();
+        if (v_size == 0) {
+            output << id << " has no subordinates." << std::endl;
+        } else {
+            output << id << " has " << v_size << " subordinates:" << std::endl;
+            for (Employee* sub : sortByID(getPointer(id)->subordinates_)) {
+                output << sub->id_ << std::endl;
+            }
         }
     }
 }
