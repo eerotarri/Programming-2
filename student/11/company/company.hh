@@ -193,10 +193,14 @@ private:
     // To check if the person can be found in employees_.
     // Takes the person to be checked as argument and
     // returns true if it exists.
-    bool employee_exists(const std::string& id) const;
+    bool employeeExists(const std::string& id) const;
+
+    // Sorts the container alphabetically by employees ID
+    // Returns the sorted container
+    std::vector<Employee*> sortByID(const std::vector<Employee*>& container) const;
     
     // Data of existing employees
-    std::map<std::string, Employee*> employees_;
+    std::vector<Employee*> employees_;
 
 };
 

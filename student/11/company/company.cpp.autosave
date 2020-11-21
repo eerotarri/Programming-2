@@ -59,7 +59,7 @@ void Company::printBoss(const std::string &id, std::ostream &output) const
 
 void Company::printSubordinates(const std::string &id, std::ostream &output) const
 {
-
+    
 }
 
 void Company::printColleagues(const std::string &id, std::ostream &output) const
