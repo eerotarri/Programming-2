@@ -26,30 +26,33 @@ void Company::addNewEmployee(const std::string &id, const std::string &dep,
 
 void Company::printEmployees(std::ostream &output) const
 {
-
+    for (auto it = employees_.begin(); it != employees_.end(); it++) {
+        output << it->second->id_<< ", " << it->second->department_ << ", "
+               << it->second->time_in_service_ << std::endl;
+    }
 }
 
-void Company::addRelation(const std::string &subordinate, const std::string &boss, std::ostream &output)
+void Company::addRelation(const std::string &subordinate,
+                          const std::string &boss, std::ostream &output)
 {
-    Employee* boss_object = nullptr;
-    Employee* employee_object = nullptr;
+    Employee* boss_object_ptr = getPointer(boss);
+    Employee* employee_object_ptr = getPointer(subordinate);
     if (employee_exists(boss)){
-        for (auto it = employees_.begin(); it != employees_.end(); it++) {
-            if (it->first == subordinate) {
-                employee_object = it->second;
-            } else if (it->first == boss) {
-                boss_object = it->second;
-            }
-        }
-        employee_object->boss_ = boss_object;
-        boss_object->subordinates_.push_back(employee_object);
-
+        employee_object_ptr->boss_ = boss_object_ptr;
+        boss_object_ptr->subordinates_.push_back(employee_object_ptr);
     }
 }
 
 void Company::printBoss(const std::string &id, std::ostream &output) const
 {
+    Employee* employee_object_ptr = getPointer(id);
 
+    if (employee_object_ptr->boss_ == nullptr) {
+        output << employee_object_ptr->id_ << " has no bosses." << std::endl;
+    } else {
+        output << employee_object_ptr->id_ << " has 1 bosses" << std::endl;
+        output << employee_object_ptr->boss_->id_ << std::endl;
+    }
 }
 
 void Company::printSubordinates(const std::string &id, std::ostream &output) const
@@ -89,7 +92,13 @@ void Company::printSubordinatesN(const std::string &id, const int n, std::ostrea
 
 Employee *Company::getPointer(const std::string &id) const
 {
-
+    Employee* employee_object_ptr;
+    for (auto it = employees_.begin(); it != employees_.end(); it++) {
+        if (it->first == id) {
+            employee_object_ptr = it->second;
+        }
+    }
+    return employee_object_ptr;
 }
 
 void Company::printNotFound(const std::string &id, std::ostream &output) const
