@@ -187,8 +187,8 @@ private:
     IdSet VectorToIdSet(const std::vector<Employee*> &container) const;
 
     // Prints the the data in a container.
-    void printGroup(const std::string& id, const std::string& group,
-                    const IdSet& container, std::ostream& output) const;
+//    void printGroup(const std::string& id, const std::string& group,
+//                    const IdSet& container, std::ostream& output) const;
 
     // To check if the person can be found in employees_.
     // Takes the person to be checked as argument and

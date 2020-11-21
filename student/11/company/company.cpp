@@ -47,13 +47,17 @@ void Company::addRelation(const std::string &subordinate,
 
 void Company::printBoss(const std::string &id, std::ostream &output) const
 {
-    Employee* employee_object_ptr = getPointer(id);
-
-    if (employee_object_ptr->boss_ == nullptr) {
-        output << employee_object_ptr->id_ << " has no bosses." << std::endl;
+    if (!employeeExists(id)) {
+        printNotFound(id, output);
     } else {
-        output << employee_object_ptr->id_ << " has 1 bosses" << std::endl;
-        output << employee_object_ptr->boss_->id_ << std::endl;
+        Employee* employee_object_ptr = getPointer(id);
+
+        if (employee_object_ptr->boss_ == nullptr) {
+            output << employee_object_ptr->id_ << " has no bosses." << std::endl;
+        } else {
+            output << employee_object_ptr->id_ << " has 1 bosses" << std::endl;
+            output << employee_object_ptr->boss_->id_ << std::endl;
+        }
     }
 }
 
@@ -72,17 +76,21 @@ void Company::printSubordinates(const std::string &id, std::ostream &output) con
 
 void Company::printColleagues(const std::string &id, std::ostream &output) const
 {
-    if (getPointer(id)->boss_ == nullptr) {
-        output << id << " has no colleagues." << std::endl;
+    if (!employeeExists(id)) {
+        printNotFound(id, output);
     } else {
-        size_t v_size = getPointer(id)->boss_->subordinates_.size();
-        if (v_size == 0) {
+        if (getPointer(id)->boss_ == nullptr) {
             output << id << " has no colleagues." << std::endl;
         } else {
-            output << id << " has " << v_size-1 << " colleagues:" << std::endl;
-            for (Employee* sub : sortByID(getPointer(id)->boss_->subordinates_)) {
-                if (sub->id_ != id) {
-                     output << sub->id_ << std::endl;
+            size_t v_size = getPointer(id)->boss_->subordinates_.size();
+            if (v_size == 0) {
+                output << id << " has no colleagues." << std::endl;
+            } else {
+                output << id << " has " << v_size-1 << " colleagues:" << std::endl;
+                for (Employee* sub : sortByID(getPointer(id)->boss_->subordinates_)) {
+                    if (sub->id_ != id) {
+                         output << sub->id_ << std::endl;
+                    }
                 }
             }
         }
@@ -91,30 +99,34 @@ void Company::printColleagues(const std::string &id, std::ostream &output) const
 
 void Company::printDepartment(const std::string &id, std::ostream &output) const
 {
-    Employee* boss_of_hierarchy = getPointer(id);
-    std::vector<Employee*> colleagues;
-
-    // Checks who is the highest ranking boss in the department
-    while (boss_of_hierarchy->department_ == getPointer(id)->department_ &&
-           boss_of_hierarchy->boss_ != nullptr) {
-
-        if (boss_of_hierarchy->boss_->department_ == boss_of_hierarchy->department_) {
-            boss_of_hierarchy = boss_of_hierarchy->boss_;
-        } else {
-            break;
-        }
-    }
-
-    colleagues.push_back(boss_of_hierarchy);
-    addSubordinates(colleagues, boss_of_hierarchy);
-
-    if (colleagues.size() == 1) {
-        output << id << " has no department colleagues." << std::endl;
+    if (!employeeExists(id)) {
+        printNotFound(id, output);
     } else {
-        output << id << " has " << colleagues.size()-1 << " department colleagues:" << std::endl;
-        for (auto e : sortByID(colleagues)) {
-            if (e->id_ != id) {
-                output << e->id_ << std::endl;
+        Employee* boss_of_hierarchy = getPointer(id);
+        std::vector<Employee*> colleagues;
+
+        // Checks who is the highest ranking boss in the department
+        while (boss_of_hierarchy->department_ == getPointer(id)->department_ &&
+               boss_of_hierarchy->boss_ != nullptr) {
+
+            if (boss_of_hierarchy->boss_->department_ == boss_of_hierarchy->department_) {
+                boss_of_hierarchy = boss_of_hierarchy->boss_;
+            } else {
+                break;
+            }
+        }
+
+        colleagues.push_back(boss_of_hierarchy);
+        addSubordinates(colleagues, boss_of_hierarchy);
+
+        if (colleagues.size() == 1) {
+            output << id << " has no department colleagues." << std::endl;
+        } else {
+            output << id << " has " << colleagues.size()-1 << " department colleagues:" << std::endl;
+            for (auto e : sortByID(colleagues)) {
+                if (e->id_ != id) {
+                    output << e->id_ << std::endl;
+                }
             }
         }
     }
@@ -122,7 +134,29 @@ void Company::printDepartment(const std::string &id, std::ostream &output) const
 
 void Company::printLongestTimeInLineManagement(const std::string &id, std::ostream &output) const
 {
+    if (!employeeExists(id)) {
+        printNotFound(id, output);
+    } else {
+        Employee* longest = getPointer(id);
+        std::vector<Employee*> line_management;
+        addSubordinates(line_management, getPointer(id));
 
+        // Check who has mos years in line management
+        for (auto e : line_management) {
+            if (e->time_in_service_ > longest->time_in_service_) {
+                longest = e;
+            }
+        }
+
+        // Prints output
+        output << "With the time of " << longest->time_in_service_ << ", "
+               << longest->id_ << " is the longest-served employee in ";
+        if (longest == getPointer(id)) {
+            output << "their line management." << std::endl;
+        } else {
+            output << id << "'s line management." << std::endl;
+        }
+    }
 }
 
 void Company::printShortestTimeInLineManagement(const std::string &id, std::ostream &output) const
@@ -153,7 +187,7 @@ Employee *Company::getPointer(const std::string &id) const
 
 void Company::printNotFound(const std::string &id, std::ostream &output) const
 {
-
+    output << "Error. " << id << " not found" << std::endl;
 }
 
 IdSet Company::VectorToIdSet(const std::vector<Employee *> &container) const
@@ -166,10 +200,10 @@ IdSet Company::VectorToIdSet(const std::vector<Employee *> &container) const
     return set_of_ids;
 }
 
-void Company::printGroup(const std::string &id, const std::string &group, const IdSet &container, std::ostream &output) const
-{
+//void Company::printGroup(const std::string &id, const std::string &group, const IdSet &container, std::ostream &output) const
+//{
 
-}
+//}
 
 bool Company::employeeExists(const std::string& id) const
 {
