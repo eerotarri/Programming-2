@@ -53,9 +53,9 @@ void Company::printBoss(const std::string &id, std::ostream &output) const
         Employee* employee_object_ptr = getPointer(id);
 
         if (employee_object_ptr->boss_ == nullptr) {
-            output << employee_object_ptr->id_ << " has no bosses." << std::endl;
+            output << employee_object_ptr->id_ << " has no bosses:" << std::endl;
         } else {
-            output << employee_object_ptr->id_ << " has 1 bosses" << std::endl;
+            output << employee_object_ptr->id_ << " has 1 bosses:" << std::endl;
             output << employee_object_ptr->boss_->id_ << std::endl;
         }
     }
@@ -253,8 +253,10 @@ void Company::addSubordinates(std::vector<Employee*>& container, Employee* boss)
 {
     if (boss->subordinates_.size() != 0) {
         for (auto sub : boss->subordinates_) {
-            container.push_back(sub);
-            addSubordinates(container, sub);
+            if (boss->department_ == sub->department_) {
+                container.push_back(sub);
+                addSubordinates(container, sub);
+            }
         }
     }
 }
