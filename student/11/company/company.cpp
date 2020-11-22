@@ -1,3 +1,20 @@
+/*
+#############################################################################
+# COMP.CS.110 Programming 2: Autumn 2020                                    #
+# Project3: Company                                                         #
+# File: company.cpp                                                         #
+# Description: Company hierarchy -class datastructure                       #
+#       Datastructure is populated with Employee-structs and provides some  #
+#       query-functions.                                                    #
+#                                                                           #
+# Program author                                                            #
+# Name: Eero Tarri                                                          #
+# Student number: 283568                                                    #
+# UserID: tarri                                                             #
+# E-Mail: eero.tarri@tuni.fi                                                #
+#############################################################################
+*/
+
 #include "company.hh"
 
 Company::Company()
@@ -5,11 +22,19 @@ Company::Company()
 
 }
 
+// Dismantles the vector "employees_"
 Company::~Company()
 {
-
+    for (auto emp : employees_) {
+        emp->boss_ = nullptr;
+        for (auto sub : emp->subordinates_) {
+            sub = nullptr;
+        }
+        delete emp;
+    }
 }
 
+// Creates new employee with information from given stream and
 void Company::addNewEmployee(const std::string &id, const std::string &dep,
                              const double &time, std::ostream &output)
 {
@@ -25,6 +50,8 @@ void Company::addNewEmployee(const std::string &id, const std::string &dep,
     }
 }
 
+// Prints a list of all employees in alphabetical order in
+// format "<ID>, <DEPARTMENT>, <TIME IN SERVICE>"
 void Company::printEmployees(std::ostream &output) const
 {
     // Prints the employee
@@ -34,6 +61,8 @@ void Company::printEmployees(std::ostream &output) const
     }
 }
 
+// Completes employees infromation by linking boss-subordinate
+// relationships to each other
 void Company::addRelation(const std::string &subordinate,
                           const std::string &boss, std::ostream &output)
 {
@@ -45,6 +74,7 @@ void Company::addRelation(const std::string &subordinate,
     }
 }
 
+// Prints the boss of given <ID>
 void Company::printBoss(const std::string &id, std::ostream &output) const
 {
     if (!employeeExists(id)) {
@@ -61,16 +91,20 @@ void Company::printBoss(const std::string &id, std::ostream &output) const
     }
 }
 
+// Prints direct subordinates of given boss <ID>
 void Company::printSubordinates(const std::string &id, std::ostream &output) const
 {
     if (!employeeExists(id)) {
         printNotFound(id, output);
     } else {
+
         size_t v_size = getPointer(id)->subordinates_.size();
         if (v_size == 0) {
             output << id << " has no subordinates." << std::endl;
         } else {
             output << id << " has " << v_size << " subordinates:" << std::endl;
+
+            // sub: subordinate of the common boss
             for (Employee* sub : sortByID(getPointer(id)->subordinates_)) {
                 output << sub->id_ << std::endl;
             }
@@ -78,6 +112,7 @@ void Company::printSubordinates(const std::string &id, std::ostream &output) con
     }
 }
 
+// Prints all the colleagues (employess with the same boss)
 void Company::printColleagues(const std::string &id, std::ostream &output) const
 {
     if (!employeeExists(id)) {
@@ -91,6 +126,8 @@ void Company::printColleagues(const std::string &id, std::ostream &output) const
                 output << id << " has no colleagues." << std::endl;
             } else {
                 output << id << " has " << v_size-1 << " colleagues:" << std::endl;
+
+                // sub: subordinate of the common boss
                 for (Employee* sub : sortByID(getPointer(id)->boss_->subordinates_)) {
                     if (sub->id_ != id) {
                          output << sub->id_ << std::endl;
@@ -101,6 +138,8 @@ void Company::printColleagues(const std::string &id, std::ostream &output) const
     }
 }
 
+// Prints all the employees in the same department and hierarchy.
+// (all of the subordinates of the highest ranking officer in line-management)
 void Company::printDepartment(const std::string &id, std::ostream &output) const
 {
     if (!employeeExists(id)) {
@@ -121,12 +160,14 @@ void Company::printDepartment(const std::string &id, std::ostream &output) const
         }
 
         colleagues.push_back(boss_of_hierarchy);
-        addSubordinates(colleagues, boss_of_hierarchy, 100);
+        addSubordinates(colleagues, boss_of_hierarchy, ALL);
 
         if (colleagues.size() == 1) {
             output << id << " has no department colleagues." << std::endl;
         } else {
             output << id << " has " << colleagues.size()-1 << " department colleagues:" << std::endl;
+
+            // e: employee in the list of colleagues
             for (auto e : sortByID(colleagues)) {
                 if (e->id_ != id) {
                     output << e->id_ << std::endl;
@@ -136,6 +177,8 @@ void Company::printDepartment(const std::string &id, std::ostream &output) const
     }
 }
 
+// Finds out the person with the most time in service under the <ID>'s
+// line-management
 void Company::printLongestTimeInLineManagement(const std::string &id, std::ostream &output) const
 {
     if (!employeeExists(id)) {
@@ -143,7 +186,7 @@ void Company::printLongestTimeInLineManagement(const std::string &id, std::ostre
     } else {
         Employee* longest = getPointer(id);
         std::vector<Employee*> line_management;
-        addSubordinates(line_management, getPointer(id), 100);
+        addSubordinates(line_management, getPointer(id), ALL);
 
         // Check who has mos years in line management
         for (auto e : line_management) {
@@ -163,6 +206,8 @@ void Company::printLongestTimeInLineManagement(const std::string &id, std::ostre
     }
 }
 
+// Finds out the person with the least time in service under the <ID>'s
+// line-management
 void Company::printShortestTimeInLineManagement(const std::string &id, std::ostream &output) const
 {
     if (!employeeExists(id)) {
@@ -170,7 +215,7 @@ void Company::printShortestTimeInLineManagement(const std::string &id, std::ostr
     } else {
         Employee* shortest = getPointer(id);
         std::vector<Employee*> line_management;
-        addSubordinates(line_management, getPointer(id), 100);
+        addSubordinates(line_management, getPointer(id), ALL);
 
         // Check who has mos years in line management
         for (auto e : line_management) {
@@ -190,6 +235,8 @@ void Company::printShortestTimeInLineManagement(const std::string &id, std::ostr
     }
 }
 
+// Prints all of the bosses n times up
+// i.e. 2 would be boss and that bosses boss
 void Company::printBossesN(const std::string &id, const int n, std::ostream &output) const
 {
     if (n < 1) {
@@ -205,6 +252,8 @@ void Company::printBossesN(const std::string &id, const int n, std::ostream &out
             addBosses(bosses, getPointer(id), n);
             IdSet boss_ids = VectorToIdSet(bosses);
             output << id << " has " << boss_ids.size() << " bosses:" << std::endl;
+
+            // b: id's of the bosses
             for (auto b : boss_ids) {
                 output << b << std::endl;
             }
@@ -212,6 +261,7 @@ void Company::printBossesN(const std::string &id, const int n, std::ostream &out
     }
 }
 
+// Prints all of the subordinates n times down
 void Company::printSubordinatesN(const std::string &id, const int n, std::ostream &output) const
 {
     if (n < 1) {
@@ -222,10 +272,13 @@ void Company::printSubordinatesN(const std::string &id, const int n, std::ostrea
         std::vector<Employee*> subs;
         addSubordinates(subs, getPointer(id), n);
         size_t v_size = subs.size();
+
         if (v_size == 0) {
             output << id << " has no subordinates." << std::endl;
         } else {
             output << id << " has " << v_size << " subordinates:" << std::endl;
+
+            // sub: subordinate of the boss being examined
             for (Employee* sub : sortByID(subs)) {
                 output << sub->id_ << std::endl;
             }
@@ -233,6 +286,7 @@ void Company::printSubordinatesN(const std::string &id, const int n, std::ostrea
     }
 }
 
+// Returns the pointer in employees_ of parameter id
 Employee *Company::getPointer(const std::string &id) const
 {
     Employee* employee_object_ptr;
@@ -244,6 +298,7 @@ Employee *Company::getPointer(const std::string &id) const
     return employee_object_ptr;
 }
 
+// Prints if id is not found
 void Company::printNotFound(const std::string &id, std::ostream &output) const
 {
     output << "Error. " << id << " not found." << std::endl;
@@ -258,11 +313,6 @@ IdSet Company::VectorToIdSet(const std::vector<Employee *> &container) const
 
     return set_of_ids;
 }
-
-//void Company::printGroup(const std::string &id, const std::string &group, const IdSet &container, std::ostream &output) const
-//{
-
-//}
 
 bool Company::employeeExists(const std::string& id) const
 {
@@ -279,6 +329,7 @@ bool Company::employeeExists(const std::string& id) const
     return exists;
 }
 
+// Sorts a vector of Employee pointers by the attribute id_
 std::vector<Employee*> Company::sortByID(const std::vector<Employee*>& container) const
 {
     IdSet ids = VectorToIdSet(container);
@@ -308,6 +359,7 @@ std::vector<Employee*> Company::sortByID(const std::vector<Employee*>& container
     return sorted_container;
 }
 
+// Recursively adds subordinates to a vector n times
 void Company::addSubordinates(std::vector<Employee*>& container, Employee* boss, const int& n) const
 {
     int count = n;
@@ -324,6 +376,7 @@ void Company::addSubordinates(std::vector<Employee*>& container, Employee* boss,
     }
 }
 
+// Recursively adds bosses to a vector n times
 void Company::addBosses(std::vector<Employee*>& container, Employee* subordinate, int n) const
 {
     Employee* boss = subordinate->boss_;

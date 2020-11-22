@@ -9,6 +9,12 @@
 # Notes: * This is a part of an exercise program                            #
 #        * Student's aren't allowed to alter public interface!              #
 #        * All changes to private side are allowed.                         #
+#                                                                           #
+# Program author                                                            #
+# Name: Eero Tarri                                                          #
+# Student number: 283568                                                    #
+# UserID: tarri                                                             #
+# E-Mail: eero.tarri@tuni.fi                                                #
 #############################################################################
 */
 #ifndef COMPANY_HH
@@ -24,6 +30,7 @@
 // Named constants to improve readability in other modules.
 const std::string EMPTY = "";
 const double NO_TIME = -1.0;
+const int ALL = 100;
 
 // Struct for an employee.
 struct Employee
@@ -186,19 +193,16 @@ private:
     // Turns a vector of employees to a set of IDs.
     IdSet VectorToIdSet(const std::vector<Employee*> &container) const;
 
-    // Prints the the data in a container.
-//    void printGroup(const std::string& id, const std::string& group,
-//                    const IdSet& container, std::ostream& output) const;
-
     // To check if the person can be found in employees_.
     // Takes the person to be checked as argument and
     // returns true if it exists.
     bool employeeExists(const std::string& id) const;
 
-    // Sorts the container alphabetically by employees ID
-    // Returns the sorted container
+    // Sorts the container alphabetically by employees ID.
+    // Returns the sorted container.
     std::vector<Employee*> sortByID(const std::vector<Employee*>& container) const;
     
+    // Recursively adds bosses or subordinates to vector n-times.
     void addSubordinates(std::vector<Employee*>& container, Employee* boss, const int& n) const;
     void addBosses(std::vector<Employee*>& container, Employee* subordinate, int n) const;
 
