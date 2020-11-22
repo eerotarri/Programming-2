@@ -121,7 +121,7 @@ void Company::printDepartment(const std::string &id, std::ostream &output) const
         }
 
         colleagues.push_back(boss_of_hierarchy);
-        addSubordinates(colleagues, boss_of_hierarchy);
+        addSubordinates(colleagues, boss_of_hierarchy, 100);
 
         if (colleagues.size() == 1) {
             output << id << " has no department colleagues." << std::endl;
@@ -143,7 +143,7 @@ void Company::printLongestTimeInLineManagement(const std::string &id, std::ostre
     } else {
         Employee* longest = getPointer(id);
         std::vector<Employee*> line_management;
-        addSubordinates(line_management, getPointer(id));
+        addSubordinates(line_management, getPointer(id), 100);
 
         // Check who has mos years in line management
         for (auto e : line_management) {
@@ -165,17 +165,72 @@ void Company::printLongestTimeInLineManagement(const std::string &id, std::ostre
 
 void Company::printShortestTimeInLineManagement(const std::string &id, std::ostream &output) const
 {
+    if (!employeeExists(id)) {
+        printNotFound(id, output);
+    } else {
+        Employee* shortest = getPointer(id);
+        std::vector<Employee*> line_management;
+        addSubordinates(line_management, getPointer(id), 100);
 
+        // Check who has mos years in line management
+        for (auto e : line_management) {
+            if (e->time_in_service_ < shortest->time_in_service_) {
+                shortest = e;
+            }
+        }
+
+        // Prints output
+        output << "With the time of " << shortest->time_in_service_ << ", "
+               << shortest->id_ << " is the shortest-served employee in ";
+        if (shortest == getPointer(id)) {
+            output << "their line management." << std::endl;
+        } else {
+            output << id << "'s line management." << std::endl;
+        }
+    }
 }
 
 void Company::printBossesN(const std::string &id, const int n, std::ostream &output) const
 {
+    if (n < 1) {
+        output << "Error. Level can't be less than 1." << std::endl;
+    } else if (!employeeExists(id)) {
+        printNotFound(id, output);
+    } else {
 
+        if (getPointer(id)->boss_ == nullptr) {
+            output << id << " has no bosses." << std::endl;
+        } else {
+            std::vector<Employee*> bosses;
+            addBosses(bosses, getPointer(id), n);
+            IdSet boss_ids = VectorToIdSet(bosses);
+            output << id << " has " << boss_ids.size() << " bosses:" << std::endl;
+            for (auto b : boss_ids) {
+                output << b << std::endl;
+            }
+        }
+    }
 }
 
 void Company::printSubordinatesN(const std::string &id, const int n, std::ostream &output) const
 {
-
+    if (n < 1) {
+        output << "Error. Level can't be less than 1." << std::endl;
+    } else if (!employeeExists(id)) {
+        printNotFound(id, output);
+    } else {
+        std::vector<Employee*> subs;
+        addSubordinates(subs, getPointer(id), n);
+        size_t v_size = subs.size();
+        if (v_size == 0) {
+            output << id << " has no subordinates." << std::endl;
+        } else {
+            output << id << " has " << v_size << " subordinates:" << std::endl;
+            for (Employee* sub : sortByID(subs)) {
+                output << sub->id_ << std::endl;
+            }
+        }
+    }
 }
 
 Employee *Company::getPointer(const std::string &id) const
@@ -191,7 +246,7 @@ Employee *Company::getPointer(const std::string &id) const
 
 void Company::printNotFound(const std::string &id, std::ostream &output) const
 {
-    output << "Error. " << id << " not found" << std::endl;
+    output << "Error. " << id << " not found." << std::endl;
 }
 
 IdSet Company::VectorToIdSet(const std::vector<Employee *> &container) const
@@ -253,14 +308,30 @@ std::vector<Employee*> Company::sortByID(const std::vector<Employee*>& container
     return sorted_container;
 }
 
-void Company::addSubordinates(std::vector<Employee*>& container, Employee* boss) const
+void Company::addSubordinates(std::vector<Employee*>& container, Employee* boss, const int& n) const
 {
+    int count = n;
     if (boss->subordinates_.size() != 0) {
         for (auto sub : boss->subordinates_) {
             if (boss->department_ == sub->department_) {
                 container.push_back(sub);
-                addSubordinates(container, sub);
+                count -= 1;
+                if (count != 0) {
+                    addSubordinates(container, sub, count);
+                }
             }
+        }
+    }
+}
+
+void Company::addBosses(std::vector<Employee*>& container, Employee* subordinate, int n) const
+{
+    Employee* boss = subordinate->boss_;
+    if (boss != nullptr) {
+        container.push_back(subordinate->boss_);
+        n -= 1;
+        if (n != 0) {
+            addBosses(container, boss, n);
         }
     }
 }

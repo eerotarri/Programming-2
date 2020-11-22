@@ -199,7 +199,8 @@ private:
     // Returns the sorted container
     std::vector<Employee*> sortByID(const std::vector<Employee*>& container) const;
     
-    void addSubordinates(std::vector<Employee*>& container, Employee* boss) const;
+    void addSubordinates(std::vector<Employee*>& container, Employee* boss, const int& n) const;
+    void addBosses(std::vector<Employee*>& container, Employee* subordinate, int n) const;
 
     // Data of existing employees
     std::vector<Employee*> employees_;
