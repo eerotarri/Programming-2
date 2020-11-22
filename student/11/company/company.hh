@@ -203,7 +203,7 @@ private:
     std::vector<Employee*> sortByID(const std::vector<Employee*>& container) const;
     
     // Recursively adds bosses or subordinates to vector n-times.
-    void addSubordinates(std::vector<Employee*>& container, Employee* boss, const int& n) const;
+    void addSubordinates(std::vector<Employee*>& container, Employee* boss, const int& n, bool is_dep=false) const;
     void addBosses(std::vector<Employee*>& container, Employee* subordinate, int n) const;
 
     // Data of existing employees

@@ -160,7 +160,7 @@ void Company::printDepartment(const std::string &id, std::ostream &output) const
         }
 
         colleagues.push_back(boss_of_hierarchy);
-        addSubordinates(colleagues, boss_of_hierarchy, ALL);
+        addSubordinates(colleagues, boss_of_hierarchy, ALL, true);
 
         if (colleagues.size() == 1) {
             output << id << " has no department colleagues." << std::endl;
@@ -360,12 +360,20 @@ std::vector<Employee*> Company::sortByID(const std::vector<Employee*>& container
 }
 
 // Recursively adds subordinates to a vector n times
-void Company::addSubordinates(std::vector<Employee*>& container, Employee* boss, const int& n) const
+void Company::addSubordinates(std::vector<Employee*>& container, Employee* boss, const int& n, bool is_dep) const
 {
     int count = n;
     if (boss->subordinates_.size() != 0) {
         for (auto sub : boss->subordinates_) {
-            if (boss->department_ == sub->department_) {
+            if (is_dep) {
+                if (boss->department_ == sub->department_) {
+                    container.push_back(sub);
+                    count -= 1;
+                    if (count != 0) {
+                        addSubordinates(container, sub, count);
+                    }
+                }
+            } else {
                 container.push_back(sub);
                 count -= 1;
                 if (count != 0) {
