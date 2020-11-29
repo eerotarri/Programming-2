@@ -18,13 +18,11 @@ MainWindow::~MainWindow()
 void MainWindow::on_fileLineEdit_textEdited(const QString &arg1)
 {
     file_ = arg1.toStdString();
-    //qDebug() << "on_fileLineEdit_textEdited";
 }
 
 void MainWindow::on_keyLineEdit_textEdited(const QString &arg1)
 {
     line_ = arg1.toStdString();
-    //qDebug() << "on_fileLineEdit_textEdited";
 }
 
 void MainWindow::on_findPushButton_clicked()
@@ -54,5 +52,5 @@ void MainWindow::on_findPushButton_clicked()
             browser_ = QString("Word found");
         }
     }
-    ui->textBrowser->setHtml(browser_);
+    ui->textBrowser->setText(browser_);
 }
