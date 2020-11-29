@@ -31,7 +31,7 @@ void MainWindow::on_findPushButton_clicked()
 {
     std::ifstream File(file_);
     if (not File) {
-        browser_ = "File not found";
+        browser_ = QString::fromStdString("File not found");
     } else {
         std::string rivi;
         bool isFound = false;
@@ -47,12 +47,12 @@ void MainWindow::on_findPushButton_clicked()
         }
 
         if (line_ == "") {
-            browser_ = "File found";
+            browser_ = QString::fromStdString("File found");
         } else if (!isFound) {
-            browser_ = "Word not found";
+            browser_ = QString::fromStdString("Word not found");
         } else {
-            browser_ = "Word found";
+            browser_ = QString::fromStdString("Word found");
         }
     }
-    ui->textBrowser->setHtml(QString::fromStdString(browser_));
+    ui->textBrowser->setHtml(browser_);
 }

@@ -27,6 +27,6 @@ private:
     Ui::MainWindow *ui;
     std::string file_ = "";
     std::string line_ = "";
-    std::string browser_;
+    QString browser_;
 };
 #endif // MAINWINDOW_HH
