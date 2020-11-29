@@ -33,13 +33,11 @@ void MainWindow::on_findPushButton_clicked()
     if (not File) {
         browser_ = "File not found";
     } else {
-        if (ui->matchCheckBox->isChecked()) {
-            std::transform(line_.begin(), line_.end(), line_.begin(), ::toupper);
-        }
         std::string rivi;
         bool isFound = false;
         while ( getline(File, rivi) ) {
             if (ui->matchCheckBox->isChecked()) {
+                std::transform(line_.begin(), line_.end(), line_.begin(), ::toupper);
                 std::transform(rivi.begin(), rivi.end(), rivi.begin(), ::toupper);
             }
             size_t found = rivi.find(line_);
