@@ -38,9 +38,9 @@ private:
     // Size of a square containing a fruit
     const int SQUARE_SIDE = 35; // give your own value here
     // Number of vertical cells (places for fruits)
-    const int ROWS = 4; // give your own value here
+    const int ROWS = 3; // give your own value here
     // Number of horizontal cells (places for fruits)
-    const int COLUMNS = 6; // give your own value here
+    const int COLUMNS = 19; // give your own value here
 
     // Constants describing scene coordinates
     const int BORDER_UP = 0;
@@ -76,9 +76,12 @@ private:
 
     // Writes the titles for the grid rows and columns
     void init_titles();
+
+    // Fills the board with colored rectangles
     void init_scene();
 
-    void check_for_match();
+    // Checks the scene for any lines of three or more fruits.
+    bool check_for_match();
 
     // Draws a single fruit near the right bottom corner of the grid
     // At the moment, this function is not called in the template,

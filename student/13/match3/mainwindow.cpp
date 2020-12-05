@@ -1,10 +1,11 @@
-#include "mainwindow.hh"
+﻿#include "mainwindow.hh"
 #include "ui_mainwindow.h"
 
 #include <QKeyEvent>
 #include <QDebug>
 #include <QPixmap>
 #include <vector>
+#include <set>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -75,10 +76,10 @@ void MainWindow::init_titles()
 void MainWindow::init_scene()
 {
     int i = 0;
-    while (i < BORDER_DOWN/SQUARE_SIDE) {
+    while (i < ROWS) {
         fruits_.push_back({});
         int j = 0;
-        while (j < BORDER_RIGHT/SQUARE_SIDE) {
+        while (j < COLUMNS) {
             QGraphicsRectItem* new_rect = new QGraphicsRectItem(0,0,SQUARE_SIDE, SQUARE_SIDE);
             new_rect->setPos(j * SQUARE_SIDE, i * SQUARE_SIDE);
 
@@ -103,29 +104,110 @@ void MainWindow::init_scene()
         }
         ++i;
     }
-    for (auto i : fruits_) {
-        for(auto j : i) {
-            qDebug() << j->brush();
-        }
+
+//    for (auto i : fruits_) {
+//        for(auto j : i) {
+//            qDebug() << j->brush();
+//        }
+//        qDebug() << "Rivi vaihtuu";
+//    }
+
+    while (check_for_match()) {
+        scene_->clear();
+        fruits_.clear();
+        init_scene();
     }
 }
 
-void MainWindow::check_for_match()
+bool MainWindow::check_for_match()
 {
-    int i_index = 0;
+
+    std::set<QGraphicsRectItem*> objects_to_remove;
+
+    // Algorithm to search for rows of three or more fruits
     int j_index = 0;
-    for (std::vector<QGraphicsRectItem*> i : fruits_) {
-        for (QGraphicsRectItem* j : i) {
-            // QGraphicsRectItem* tmp = j;
-            if (j->brush() == fruits_.at(i_index).at(j_index+1)->brush()) {
-                // At least the Rect to the right is the same color
+    while (j_index < ROWS) {
+        int i_index = 1;
+        std::set<QGraphicsRectItem*> row_queue = {};
 
+        while (i_index < COLUMNS) {
 
+            row_queue.insert(fruits_[j_index][i_index-1]);
+
+            // Looks if two consecutive objects on x-axis are the same
+            // and adds them to the row queue.
+            if (fruits_[j_index][i_index]->brush() ==
+                    fruits_[j_index][i_index-1]->brush()) {
+                row_queue.insert(fruits_[j_index][i_index]);
+                if (i_index + 1 == COLUMNS) {
+
+                    if (row_queue.size() >= 3) {
+                        for (auto obj : row_queue) {
+                            objects_to_remove.insert(obj);
+                        }
+                    }
+                }
+            // Adds objects to the set of items to be removed
+            // if there are at least 3 in a row and resets row_queue.
+            } else {
+                if (row_queue.size() >= 3) {
+                    for (auto obj : row_queue) {
+                        objects_to_remove.insert(obj);
+                    }
+                }
+                row_queue = {};
+            }
+            ++i_index;
+        }
+        ++j_index;
+    }
+
+    // Algorithm to search for rows of three or more fruits
+    int i_index = 0;
+    while (i_index < COLUMNS) {
+        int j_index = 1;
+        std::set<QGraphicsRectItem*> column_queue = {};
+
+        while (j_index < ROWS) {
+
+            column_queue.insert(fruits_[j_index-1][i_index]);
+
+            // Looks if two consecutive objects on y-axis are the same
+            // and adds them to the column queue.
+            if (fruits_[j_index][i_index]->brush() ==
+                    fruits_[j_index-1][i_index]->brush()) {
+                column_queue.insert(fruits_[j_index][i_index]);
+                if (j_index + 1 == ROWS) {
+
+                    if (column_queue.size() >= 3) {
+                        for (auto obj : column_queue) {
+                            objects_to_remove.insert(obj);
+                        }
+                    }
+                }
+            // Adds objects to the set of items to be removed
+            // if there are at least 3 in a row and resets column_queue.
+            } else {
+                if (column_queue.size() >= 3) {
+                    for (auto obj : column_queue) {
+                        objects_to_remove.insert(obj);
+                    }
+                }
+                column_queue = {};
             }
             ++j_index;
         }
         ++i_index;
     }
+
+//    qDebug() << objects_to_remove.size();
+
+    return objects_to_remove.size() != 0;
+
+
+//    for (auto item : objects_to_remove) {
+//        qDebug() << item->pos();
+//    }
 }
 
 void MainWindow::draw_fruit()
