@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setGeometry(LEFT_MARGIN, TOP_MARGIN,
                                   BORDER_RIGHT + 2, BORDER_DOWN + 2);
     ui->graphicsView->setScene(scene_);
+    //
 
     // The width of the scene_ is BORDER_RIGHT decreased by 1 and
     // the height of it is BORDER_DOWN decreased by 1, because
@@ -39,12 +40,63 @@ MainWindow::MainWindow(QWidget *parent)
     init_titles();
     init_scene();
 
-    // More code perhaps needed
+    ui->graphicsView->installEventFilter(this);
+
+    connect(ui->upButton, &QRadioButton::clicked, this, &MainWindow::on_button_clicked);
+    connect(ui->downButton, &QRadioButton::clicked, this, &MainWindow::on_button_clicked);
+    connect(ui->leftButton, &QRadioButton::clicked, this, &MainWindow::on_button_clicked);
+    connect(ui->rightButton, &QRadioButton::clicked, this, &MainWindow::on_button_clicked);
+
+    // Sets button up checked by default.
+    ui->upButton->setChecked(true);
+
+    timer = new QTimer();
+    timer->setInterval(1000);
+    connect(timer, &QTimer::timeout, this, &MainWindow::on_timeout);
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress) {
+        QPoint point = ui->graphicsView->mapFromGlobal(QCursor::pos());
+        int x = point.x();
+        int y = point.y();
+        clicked_x_ = x;
+        clicked_y_ = y;
+        switch_boxes();
+    }
+
+    return QMainWindow::eventFilter(watched, event);
+}
+
+void MainWindow::on_timeout()
+{
+    switch_boxes(true);
+    timer->stop();
+}
+
+
+
+
+
+void MainWindow::on_button_clicked()
+{
+    if (ui->upButton->isChecked()) {
+        direction_ = UP;
+    } else if (ui->downButton->isChecked()) {
+        direction_ = DOWN;
+    } else if (ui->leftButton->isChecked()) {
+        direction_ = LEFT;
+    } else if (ui->rightButton->isChecked()) {
+        direction_ = RIGHT;
+    }
+    // qDebug() << direction_;
 }
 
 void MainWindow::init_titles()
@@ -112,11 +164,20 @@ void MainWindow::init_scene()
 //        qDebug() << "Rivi vaihtuu";
 //    }
 
+    // Initializes the scene until no lines of three or more exists.
     while (check_for_match()) {
         scene_->clear();
         fruits_.clear();
         init_scene();
     }
+
+//    for (auto vector : fruits_) {
+//        for (auto item : vector) {
+//            item->acceptTouchEvents();
+//            connect(item, &QGraphicsRectItem::isSelected, this, &MainWindow::on_mouse_press);
+//        }
+//    }
+
 }
 
 bool MainWindow::check_for_match()
@@ -207,7 +268,41 @@ bool MainWindow::check_for_match()
 
 //    for (auto item : objects_to_remove) {
 //        qDebug() << item->pos();
-//    }
+    //    }
+}
+
+void MainWindow::switch_boxes(bool no_match)
+{
+    int x_of_item = clicked_x_ - clicked_x_ % SQUARE_SIDE;
+    int y_of_item = clicked_y_ - clicked_y_ % SQUARE_SIDE;
+
+    int x_index = x_of_item / SQUARE_SIDE;
+    int y_index = y_of_item / SQUARE_SIDE;
+
+    int x_dir = x_index;
+    int y_dir = y_index;
+    if (direction_ == UP) {
+        y_dir = y_index - 1;
+    } else if (direction_ == LEFT) {
+        x_dir = x_index - 1;
+    } else if (direction_ == DOWN) {
+        y_dir = y_index + 1;
+    } else if (direction_ == RIGHT) {
+        x_dir = x_index + 1;
+    }
+
+    QBrush tmp = fruits_.at(y_index).at(x_index)->brush();
+    if (y_dir >= 0 && x_dir >= 0 &&
+        y_dir < ROWS && x_dir < COLUMNS) {
+        fruits_.at(y_index).at(x_index)->setBrush(fruits_.at(y_dir).at(x_dir)->brush());
+        fruits_.at(y_dir).at(x_dir)->setBrush(tmp);
+
+    }
+
+    if (!check_for_match() && !no_match) {
+        timer->start();
+    }
+
 }
 
 void MainWindow::draw_fruit()
@@ -236,3 +331,4 @@ void MainWindow::draw_fruit()
                        SQUARE_SIDE, SQUARE_SIDE);
     label->setPixmap(image);
 }
+

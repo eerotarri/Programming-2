@@ -22,13 +22,29 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    bool eventFilter(QObject* watched, QEvent* event) override;
+
 private slots:
+
+    void on_button_clicked();
+    void on_timeout();
 
 private:
     Ui::MainWindow *ui;
 
     // Scene for the game grid
     QGraphicsScene* scene_;
+
+    QTimer* timer;
+
+    // The direction to examine clicked rectangle with.
+    // UP by default.
+    enum Direction {UP,
+                   DOWN,
+                   LEFT,
+                   RIGHT};
+
+    Direction direction_ = UP;
 
     // Margins for the drawing area (the graphicsView object)
     // You can change the values as you wish
@@ -38,9 +54,9 @@ private:
     // Size of a square containing a fruit
     const int SQUARE_SIDE = 35; // give your own value here
     // Number of vertical cells (places for fruits)
-    const int ROWS = 3; // give your own value here
+    const int ROWS = 10; // give your own value here
     // Number of horizontal cells (places for fruits)
-    const int COLUMNS = 19; // give your own value here
+    const int COLUMNS = 12; // give your own value here
 
     // Constants describing scene coordinates
     const int BORDER_UP = 0;
@@ -74,6 +90,9 @@ private:
     std::default_random_engine randomEng_;
     std::uniform_int_distribution<int> distr_;
 
+    int clicked_x_;
+    int clicked_y_;
+
     // Writes the titles for the grid rows and columns
     void init_titles();
 
@@ -82,6 +101,8 @@ private:
 
     // Checks the scene for any lines of three or more fruits.
     bool check_for_match();
+
+    void switch_boxes(bool no_match=false);
 
     // Draws a single fruit near the right bottom corner of the grid
     // At the moment, this function is not called in the template,

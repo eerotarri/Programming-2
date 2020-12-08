@@ -14,6 +14,7 @@
 #include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QWidget>
 
@@ -24,6 +25,10 @@ class Ui_MainWindow
 public:
     QWidget *centralwidget;
     QGraphicsView *graphicsView;
+    QRadioButton *leftButton;
+    QRadioButton *rightButton;
+    QRadioButton *upButton;
+    QRadioButton *downButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -42,6 +47,18 @@ public:
         font.setWeight(50);
         graphicsView->setFont(font);
         graphicsView->viewport()->setProperty("cursor", QVariant(QCursor(Qt::ArrowCursor)));
+        leftButton = new QRadioButton(centralwidget);
+        leftButton->setObjectName(QString::fromUtf8("leftButton"));
+        leftButton->setGeometry(QRect(80, 50, 106, 26));
+        rightButton = new QRadioButton(centralwidget);
+        rightButton->setObjectName(QString::fromUtf8("rightButton"));
+        rightButton->setGeometry(QRect(200, 50, 106, 26));
+        upButton = new QRadioButton(centralwidget);
+        upButton->setObjectName(QString::fromUtf8("upButton"));
+        upButton->setGeometry(QRect(140, 20, 106, 26));
+        downButton = new QRadioButton(centralwidget);
+        downButton->setObjectName(QString::fromUtf8("downButton"));
+        downButton->setGeometry(QRect(140, 80, 106, 26));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -59,6 +76,10 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
+        leftButton->setText(QCoreApplication::translate("MainWindow", "Left", nullptr));
+        rightButton->setText(QCoreApplication::translate("MainWindow", "Right", nullptr));
+        upButton->setText(QCoreApplication::translate("MainWindow", "Up", nullptr));
+        downButton->setText(QCoreApplication::translate("MainWindow", "Down", nullptr));
     } // retranslateUi
 
 };
