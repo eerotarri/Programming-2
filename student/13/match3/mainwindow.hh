@@ -9,6 +9,7 @@
 #include <random>
 #include <QTimer>
 #include <QLabel>
+#include <set>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -28,6 +29,7 @@ private slots:
 
     void on_button_clicked();
     void on_timeout();
+    void switch_boxes(bool no_match=false);
 
 private:
     Ui::MainWindow *ui;
@@ -52,11 +54,11 @@ private:
     const int LEFT_MARGIN = 100;
 
     // Size of a square containing a fruit
-    const int SQUARE_SIDE = 35; // give your own value here
+    const int SQUARE_SIDE = 45; // give your own value here
     // Number of vertical cells (places for fruits)
-    const int ROWS = 10; // give your own value here
+    const int ROWS = 8; // give your own value here
     // Number of horizontal cells (places for fruits)
-    const int COLUMNS = 12; // give your own value here
+    const int COLUMNS = 11; // give your own value here
 
     // Constants describing scene coordinates
     const int BORDER_UP = 0;
@@ -90,8 +92,12 @@ private:
     std::default_random_engine randomEng_;
     std::uniform_int_distribution<int> distr_;
 
+    std::set<QGraphicsRectItem*> objects_to_remove_;
+
     int clicked_x_;
     int clicked_y_;
+
+    std::string func_to_call_;
 
     // Writes the titles for the grid rows and columns
     void init_titles();
@@ -102,7 +108,7 @@ private:
     // Checks the scene for any lines of three or more fruits.
     bool check_for_match();
 
-    void switch_boxes(bool no_match=false);
+    void delete_boxes();
 
     // Draws a single fruit near the right bottom corner of the grid
     // At the moment, this function is not called in the template,

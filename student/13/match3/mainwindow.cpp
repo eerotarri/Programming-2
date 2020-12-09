@@ -1,11 +1,10 @@
-﻿#include "mainwindow.hh"
+#include "mainwindow.hh"
 #include "ui_mainwindow.h"
 
 #include <QKeyEvent>
 #include <QDebug>
 #include <QPixmap>
 #include <vector>
-#include <set>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -77,7 +76,11 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 void MainWindow::on_timeout()
 {
-    switch_boxes(true);
+    if (func_to_call_ == "switch_boxes") {
+        switch_boxes(true);
+    } else if (func_to_call_ == "delete_boxes") {
+        delete_boxes();
+    }
     timer->stop();
 }
 
@@ -96,7 +99,6 @@ void MainWindow::on_button_clicked()
     } else if (ui->rightButton->isChecked()) {
         direction_ = RIGHT;
     }
-    // qDebug() << direction_;
 }
 
 void MainWindow::init_titles()
@@ -157,34 +159,17 @@ void MainWindow::init_scene()
         ++i;
     }
 
-//    for (auto i : fruits_) {
-//        for(auto j : i) {
-//            qDebug() << j->brush();
-//        }
-//        qDebug() << "Rivi vaihtuu";
-//    }
-
     // Initializes the scene until no lines of three or more exists.
     while (check_for_match()) {
+        objects_to_remove_.clear();
         scene_->clear();
         fruits_.clear();
         init_scene();
     }
-
-//    for (auto vector : fruits_) {
-//        for (auto item : vector) {
-//            item->acceptTouchEvents();
-//            connect(item, &QGraphicsRectItem::isSelected, this, &MainWindow::on_mouse_press);
-//        }
-//    }
-
 }
 
 bool MainWindow::check_for_match()
 {
-
-    std::set<QGraphicsRectItem*> objects_to_remove;
-
     // Algorithm to search for rows of three or more fruits
     int j_index = 0;
     while (j_index < ROWS) {
@@ -204,7 +189,7 @@ bool MainWindow::check_for_match()
 
                     if (row_queue.size() >= 3) {
                         for (auto obj : row_queue) {
-                            objects_to_remove.insert(obj);
+                            objects_to_remove_.insert(obj);
                         }
                     }
                 }
@@ -213,7 +198,7 @@ bool MainWindow::check_for_match()
             } else {
                 if (row_queue.size() >= 3) {
                     for (auto obj : row_queue) {
-                        objects_to_remove.insert(obj);
+                        objects_to_remove_.insert(obj);
                     }
                 }
                 row_queue = {};
@@ -242,7 +227,7 @@ bool MainWindow::check_for_match()
 
                     if (column_queue.size() >= 3) {
                         for (auto obj : column_queue) {
-                            objects_to_remove.insert(obj);
+                            objects_to_remove_.insert(obj);
                         }
                     }
                 }
@@ -251,7 +236,7 @@ bool MainWindow::check_for_match()
             } else {
                 if (column_queue.size() >= 3) {
                     for (auto obj : column_queue) {
-                        objects_to_remove.insert(obj);
+                        objects_to_remove_.insert(obj);
                     }
                 }
                 column_queue = {};
@@ -261,14 +246,24 @@ bool MainWindow::check_for_match()
         ++i_index;
     }
 
-//    qDebug() << objects_to_remove.size();
+    return objects_to_remove_.size() != 0;
+}
 
-    return objects_to_remove.size() != 0;
-
-
-//    for (auto item : objects_to_remove) {
-//        qDebug() << item->pos();
-    //    }
+void MainWindow::delete_boxes()
+{
+    int j_index = 0;
+    for (auto row : fruits_) {
+        int i_index = 0;
+        for (auto fruit : row) {
+            auto found = objects_to_remove_.find(fruit);
+            if (found != objects_to_remove_.end()) {
+                fruits_.at(j_index).at(i_index) = nullptr;
+            }
+        }
+    }
+    for (QGraphicsRectItem* rec : objects_to_remove_) {
+        delete rec;
+    }
 }
 
 void MainWindow::switch_boxes(bool no_match)
@@ -300,6 +295,10 @@ void MainWindow::switch_boxes(bool no_match)
     }
 
     if (!check_for_match() && !no_match) {
+        func_to_call_ = "switch_boxes";
+        timer->start();
+    } else {
+        func_to_call_ = "delete_boxes";
         timer->start();
     }
 
