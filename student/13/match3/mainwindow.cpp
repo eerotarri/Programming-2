@@ -84,10 +84,6 @@ void MainWindow::on_timeout()
     timer->stop();
 }
 
-
-
-
-
 void MainWindow::on_button_clicked()
 {
     if (ui->upButton->isChecked()) {
@@ -178,23 +174,32 @@ bool MainWindow::check_for_match()
 
         while (i_index < COLUMNS) {
 
-            row_queue.insert(fruits_[j_index][i_index-1]);
+            if (!(fruits_[j_index][i_index] == nullptr || fruits_[j_index][i_index-1] == nullptr)) {
+                row_queue.insert(fruits_[j_index][i_index-1]);
 
-            // Looks if two consecutive objects on x-axis are the same
-            // and adds them to the row queue.
-            if (fruits_[j_index][i_index]->brush() ==
-                    fruits_[j_index][i_index-1]->brush()) {
-                row_queue.insert(fruits_[j_index][i_index]);
-                if (i_index + 1 == COLUMNS) {
+                // Looks if two consecutive objects on x-axis are the same
+                // and adds them to the row queue.
+                if (fruits_[j_index][i_index]->brush() ==
+                        fruits_[j_index][i_index-1]->brush()) {
+                    row_queue.insert(fruits_[j_index][i_index]);
+                    if (i_index + 1 == COLUMNS) {
 
+                        if (row_queue.size() >= 3) {
+                            for (auto obj : row_queue) {
+                                objects_to_remove_.insert(obj);
+                            }
+                        }
+                    }
+                // Adds objects to the set of items to be removed
+                // if there are at least 3 in a row and resets row_queue.
+                } else {
                     if (row_queue.size() >= 3) {
                         for (auto obj : row_queue) {
                             objects_to_remove_.insert(obj);
                         }
                     }
+                    row_queue = {};
                 }
-            // Adds objects to the set of items to be removed
-            // if there are at least 3 in a row and resets row_queue.
             } else {
                 if (row_queue.size() >= 3) {
                     for (auto obj : row_queue) {
@@ -203,6 +208,8 @@ bool MainWindow::check_for_match()
                 }
                 row_queue = {};
             }
+
+
             ++i_index;
         }
         ++j_index;
@@ -216,23 +223,32 @@ bool MainWindow::check_for_match()
 
         while (j_index < ROWS) {
 
-            column_queue.insert(fruits_[j_index-1][i_index]);
+            if (!(fruits_[j_index][i_index] == nullptr || fruits_[j_index-1][i_index] == nullptr)) {
+                column_queue.insert(fruits_[j_index-1][i_index]);
 
-            // Looks if two consecutive objects on y-axis are the same
-            // and adds them to the column queue.
-            if (fruits_[j_index][i_index]->brush() ==
-                    fruits_[j_index-1][i_index]->brush()) {
-                column_queue.insert(fruits_[j_index][i_index]);
-                if (j_index + 1 == ROWS) {
+                // Looks if two consecutive objects on y-axis are the same
+                // and adds them to the column queue.
+                if (fruits_[j_index][i_index]->brush() ==
+                        fruits_[j_index-1][i_index]->brush()) {
+                    column_queue.insert(fruits_[j_index][i_index]);
+                    if (j_index + 1 == ROWS) {
 
+                        if (column_queue.size() >= 3) {
+                            for (auto obj : column_queue) {
+                                objects_to_remove_.insert(obj);
+                            }
+                        }
+                    }
+                // Adds objects to the set of items to be removed
+                // if there are at least 3 in a row and resets column_queue.
+                } else {
                     if (column_queue.size() >= 3) {
                         for (auto obj : column_queue) {
                             objects_to_remove_.insert(obj);
                         }
                     }
+                    column_queue = {};
                 }
-            // Adds objects to the set of items to be removed
-            // if there are at least 3 in a row and resets column_queue.
             } else {
                 if (column_queue.size() >= 3) {
                     for (auto obj : column_queue) {
@@ -245,7 +261,6 @@ bool MainWindow::check_for_match()
         }
         ++i_index;
     }
-
     return objects_to_remove_.size() != 0;
 }
 
@@ -259,11 +274,32 @@ void MainWindow::delete_boxes()
             if (found != objects_to_remove_.end()) {
                 fruits_.at(j_index).at(i_index) = nullptr;
             }
+            ++i_index;
         }
+        ++j_index;
     }
     for (QGraphicsRectItem* rec : objects_to_remove_) {
-        delete rec;
+        for (auto item : scene_->items()) {
+            if (rec == item) {
+                delete rec;
+            }
+        }
     }
+
+    //    for (std::vector<QGraphicsRectItem*> i : fruits_) {
+    //        for (QGraphicsRectItem* item : i) {
+    //            if (item == nullptr) {
+    //                qDebug() << "vittu";
+    //            } else {
+    //                qDebug() << item->pos();
+    //            }
+    //        }
+    //    }
+}
+
+void MainWindow::drop_boxes()
+{
+    // Stub
 }
 
 void MainWindow::switch_boxes(bool no_match)
@@ -289,8 +325,11 @@ void MainWindow::switch_boxes(bool no_match)
     QBrush tmp = fruits_.at(y_index).at(x_index)->brush();
     if (y_dir >= 0 && x_dir >= 0 &&
         y_dir < ROWS && x_dir < COLUMNS) {
-        fruits_.at(y_index).at(x_index)->setBrush(fruits_.at(y_dir).at(x_dir)->brush());
-        fruits_.at(y_dir).at(x_dir)->setBrush(tmp);
+        if (fruits_.at(y_index).at(x_index) != nullptr && fruits_.at(y_dir).at(x_dir) != nullptr) {
+            fruits_.at(y_index).at(x_index)->setBrush(fruits_.at(y_dir).at(x_dir)->brush());
+            fruits_.at(y_dir).at(x_dir)->setBrush(tmp);
+        }
+
 
     }
 

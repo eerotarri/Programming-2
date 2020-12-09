@@ -110,6 +110,8 @@ private:
 
     void delete_boxes();
 
+    void drop_boxes();
+
     // Draws a single fruit near the right bottom corner of the grid
     // At the moment, this function is not called in the template,
     // but try to do so, if you want to use real fruits instead of rectangles.
