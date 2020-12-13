@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QLabel>
@@ -38,6 +39,7 @@ public:
     QLabel *timeLabel;
     QPushButton *restartButton;
     QPushButton *quitButton;
+    QCheckBox *refillBox;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -86,6 +88,9 @@ public:
         quitButton = new QPushButton(centralwidget);
         quitButton->setObjectName(QString::fromUtf8("quitButton"));
         quitButton->setGeometry(QRect(680, 70, 84, 28));
+        refillBox = new QCheckBox(centralwidget);
+        refillBox->setObjectName(QString::fromUtf8("refillBox"));
+        refillBox->setGeometry(QRect(570, 30, 91, 26));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -112,6 +117,7 @@ public:
         timeLabel->setText(QCoreApplication::translate("MainWindow", "00:00:00", nullptr));
         restartButton->setText(QCoreApplication::translate("MainWindow", "RESTART", nullptr));
         quitButton->setText(QCoreApplication::translate("MainWindow", "QUIT", nullptr));
+        refillBox->setText(QCoreApplication::translate("MainWindow", "REFILL", nullptr));
     } // retranslateUi
 
 };

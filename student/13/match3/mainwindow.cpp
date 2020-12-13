@@ -64,6 +64,11 @@ MainWindow::MainWindow(QWidget *parent)
     // Sets button up checked by default.
     ui->upButton->setChecked(true);
 
+    ui->pointNumber->setAutoFillBackground(true);
+    QPalette Pal = ui->pointNumber->palette();
+    Pal.setColor(QPalette::Normal, QPalette::Window, Qt::blue);
+    ui->pointNumber->setPalette(Pal);
+
     // Timer for the clock with 1 second interval.
     timer = new QTimer();
     timer->setInterval(1000);
@@ -94,6 +99,7 @@ MainWindow::~MainWindow()
 // If rectangle is clicked eventfilter will call for switch_boxes.
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
+
     if (!already_pressed_) {
         if (event->type() == QEvent::MouseButtonPress) {
             already_pressed_ = true;
@@ -104,6 +110,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
             switch_boxes();
         }
     }
+
     return QMainWindow::eventFilter(watched, event);
 }
 
@@ -393,10 +400,46 @@ void MainWindow::delete_boxes()
     QTimer::singleShot(1000, this, SLOT(drop_boxes()));
 }
 
+// Fills all null pointers with new fruits.
+void MainWindow::fill_the_board()
+{
+    int i = 0;
+    while (i < ROWS) {
+        int j = 0;
+        while (j < COLUMNS) {
+            if (fruits_[i][j] == nullptr) {
+                QGraphicsRectItem* new_rect = new QGraphicsRectItem(0,0,SQUARE_SIDE, SQUARE_SIDE);
+                new_rect->setPos(j * SQUARE_SIDE, i * SQUARE_SIDE);
+
+                Fruit_kind color = static_cast<Fruit_kind>(rand() % NUMBER_OF_FRUITS);
+                if (color == PLUM) {
+                    new_rect->setBrush(VIOLET);
+                } else if (color == STRAWBERRY) {
+                    new_rect->setBrush(RED);
+                } else if (color == APPLE) {
+                    new_rect->setBrush(GREEN);
+                } else if (color == LEMON) {
+                    new_rect->setBrush(YELLOW);
+                } else if (color == BLUEBERRY) {
+                    new_rect->setBrush(BLUE);
+                } else if (color == ORANGE) {
+                    new_rect->setBrush(ORANGE_COLOR);
+                }
+                scene_->addItem(new_rect);
+                fruits_[i][j] = new_rect;
+            }
+            ++j;
+        }
+        ++i;
+    }
+}
+
 // Resets the scene with new colors.
 // Resets the clock and points.
 void MainWindow::reinitialize()
 {
+    ui->refillBox->setEnabled(true);
+
     objects_to_remove_.clear();
     scene_->clear();
     fruits_.clear();
@@ -450,8 +493,11 @@ void MainWindow::drop_boxes(bool d)
     if (check_for_match()) {
         QTimer::singleShot(1000, this, SLOT(delete_boxes()));
     } else {
-        already_pressed_ = false;
         enable_buttons();
+        if (ui->refillBox->isChecked()) {
+            fill_the_board();
+        }
+        already_pressed_ = false;
     }
 }
 
@@ -466,6 +512,7 @@ void MainWindow::drop_boxes(bool d)
 // If matches are found delete_boxes will be called.
 void MainWindow::switch_boxes()
 {
+    ui->refillBox->setDisabled(true);
     int x_index = (clicked_x_ - clicked_x_ % SQUARE_SIDE) / SQUARE_SIDE;
     int y_index = (clicked_y_ - clicked_y_ % SQUARE_SIDE) / SQUARE_SIDE;
 
@@ -492,10 +539,10 @@ void MainWindow::switch_boxes()
 
     if (!check_for_match() && !no_match_) {
         no_match_ = true;
+
         QTimer::singleShot(1000, this, SLOT(switch_boxes()));
-        already_pressed_ = false;
+
     } else {
         QTimer::singleShot(1000, this, SLOT(delete_boxes()));
     }
-
 }

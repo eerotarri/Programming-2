@@ -160,6 +160,19 @@
      <string>QUIT</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="refillBox">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>30</y>
+      <width>91</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>REFILL</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

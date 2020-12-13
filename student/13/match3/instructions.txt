@@ -62,6 +62,12 @@ POINTS
 The game tracks points that are shown in an LCD label.
 
 
+REFILL
+
+The player can choose to refill the board. When REFILL is checked after
+dropping fruits empty spaces will be filled.
+
+
 
 STRUCTURE
 

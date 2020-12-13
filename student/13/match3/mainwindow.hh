@@ -50,6 +50,7 @@ private slots:
     void switch_boxes();
     void drop_boxes(bool d=true);
     void delete_boxes();
+    void fill_the_board();
     void reinitialize();
     void quit();
 
