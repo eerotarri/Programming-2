@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     timer = new QTimer();
     timer->setInterval(1000);
+    timer->setSingleShot(true);
     connect(timer, &QTimer::timeout, this, &MainWindow::on_timeout);
 
 }
@@ -62,25 +63,22 @@ MainWindow::~MainWindow()
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-    if (event->type() == QEvent::MouseButtonPress) {
-        QPoint point = ui->graphicsView->mapFromGlobal(QCursor::pos());
-        int x = point.x();
-        int y = point.y();
-        clicked_x_ = x;
-        clicked_y_ = y;
-        switch_boxes();
+    if (!already_pressed_) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            already_pressed_ = true;
+            disable_buttons();
+            QPoint point = ui->graphicsView->mapFromGlobal(QCursor::pos());
+            clicked_x_ = point.x();
+            clicked_y_ = point.y();
+            no_match_ = false;
+            switch_boxes();
+        }
     }
-
     return QMainWindow::eventFilter(watched, event);
 }
 
 void MainWindow::on_timeout()
 {
-    if (func_to_call_ == "switch_boxes") {
-        switch_boxes(true);
-    } else if (func_to_call_ == "delete_boxes") {
-        delete_boxes();
-    }
     timer->stop();
 }
 
@@ -261,11 +259,29 @@ bool MainWindow::check_for_match()
         }
         ++i_index;
     }
+
     return objects_to_remove_.size() != 0;
+}
+
+void MainWindow::disable_buttons()
+{
+    ui->upButton->setEnabled(false);
+    ui->downButton->setEnabled(false);
+    ui->leftButton->setEnabled(false);
+    ui->rightButton->setEnabled(false);
+}
+
+void MainWindow::enable_buttons()
+{
+    ui->upButton->setEnabled(true);
+    ui->downButton->setEnabled(true);
+    ui->leftButton->setEnabled(true);
+    ui->rightButton->setEnabled(true);
 }
 
 void MainWindow::delete_boxes()
 {
+    already_pressed_ = true;
     int j_index = 0;
     for (auto row : fruits_) {
         int i_index = 0;
@@ -279,30 +295,48 @@ void MainWindow::delete_boxes()
         ++j_index;
     }
     for (QGraphicsRectItem* rec : objects_to_remove_) {
-        for (auto item : scene_->items()) {
-            if (rec == item) {
-                delete rec;
-            }
-        }
+        delete rec;
     }
 
-    //    for (std::vector<QGraphicsRectItem*> i : fruits_) {
-    //        for (QGraphicsRectItem* item : i) {
-    //            if (item == nullptr) {
-    //                qDebug() << "vittu";
-    //            } else {
-    //                qDebug() << item->pos();
-    //            }
-    //        }
-    //    }
+    objects_to_remove_ = {};
+    QTimer::singleShot(1000, this, SLOT(drop_boxes()));
 }
 
-void MainWindow::drop_boxes()
+void MainWindow::drop_boxes(bool d)
 {
-    // Stub
+    already_pressed_ = true;
+    bool dropped = false;
+    int j_index = 0;
+    while (j_index < ROWS - 1) {
+        int i_index = 0;
+        while (i_index < COLUMNS) {
+            if (fruits_[j_index][i_index] != nullptr) {
+                if (fruits_[j_index + 1][i_index] == nullptr) {
+                    // Move rectangle down by one
+                    fruits_[j_index][i_index]->setPos(i_index * SQUARE_SIDE,
+                                                      (j_index + 1) * SQUARE_SIDE);
+                    fruits_[j_index + 1][i_index] = fruits_[j_index][i_index];
+                    fruits_[j_index][i_index] = nullptr;
+                    dropped = true;
+                }
+            }
+            ++i_index;
+        }
+        ++j_index;
+    }
+    if (d == true) {
+        drop_boxes(dropped);
+    }
+    if (check_for_match()) {
+        QTimer::singleShot(1000, this, SLOT(delete_boxes()));
+    }
+    if (!check_for_match()) {
+        already_pressed_ = false;
+        enable_buttons();
+    }
 }
 
-void MainWindow::switch_boxes(bool no_match)
+void MainWindow::switch_boxes()
 {
     int x_of_item = clicked_x_ - clicked_x_ % SQUARE_SIDE;
     int y_of_item = clicked_y_ - clicked_y_ % SQUARE_SIDE;
@@ -329,16 +363,14 @@ void MainWindow::switch_boxes(bool no_match)
             fruits_.at(y_index).at(x_index)->setBrush(fruits_.at(y_dir).at(x_dir)->brush());
             fruits_.at(y_dir).at(x_dir)->setBrush(tmp);
         }
-
-
     }
 
-    if (!check_for_match() && !no_match) {
-        func_to_call_ = "switch_boxes";
-        timer->start();
+    if (!check_for_match() && !no_match_) {
+        no_match_ = true;
+        QTimer::singleShot(1000, this, SLOT(switch_boxes()));
+        already_pressed_ = false;
     } else {
-        func_to_call_ = "delete_boxes";
-        timer->start();
+        QTimer::singleShot(1000, this, SLOT(delete_boxes()));
     }
 
 }

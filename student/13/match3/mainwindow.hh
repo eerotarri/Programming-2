@@ -29,7 +29,9 @@ private slots:
 
     void on_button_clicked();
     void on_timeout();
-    void switch_boxes(bool no_match=false);
+    void switch_boxes();
+    void drop_boxes(bool d=true);
+    void delete_boxes();
 
 private:
     Ui::MainWindow *ui;
@@ -98,6 +100,9 @@ private:
     int clicked_y_;
 
     std::string func_to_call_;
+    bool already_pressed_ = false;
+
+    bool no_match_ = false;
 
     // Writes the titles for the grid rows and columns
     void init_titles();
@@ -108,9 +113,8 @@ private:
     // Checks the scene for any lines of three or more fruits.
     bool check_for_match();
 
-    void delete_boxes();
-
-    void drop_boxes();
+    void disable_buttons();
+    void enable_buttons();
 
     // Draws a single fruit near the right bottom corner of the grid
     // At the moment, this function is not called in the template,
