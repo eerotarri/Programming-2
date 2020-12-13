@@ -1,3 +1,20 @@
+/*
+#############################################################################
+# COMP.CS.110 Programming 2: Autumn 2020                                    #
+# Project3: Match3                                                          #
+# File: mainwindow.hh                                                       #
+# Description: Fruit flip game header file. Data-structure                  #
+#        consists of QGraphicsRectItem pointers that have respective        #
+#        positions in the scene                                             #
+#                                                                           #
+# Program author                                                            #
+# Name: Eero Tarri                                                          #
+# Student number: 283568                                                    #
+# UserID: tarri                                                             #
+# E-Mail: eero.tarri@tuni.fi                                                #
+#############################################################################
+*/
+
 #ifndef MAINWINDOW_HH
 #define MAINWINDOW_HH
 
@@ -23,15 +40,17 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    // Eventfilter to get access to mouse button press events.
     bool eventFilter(QObject* watched, QEvent* event) override;
 
 private slots:
 
-    void on_button_clicked();
+    void button_pushed_down();
     void on_timeout();
     void switch_boxes();
     void drop_boxes(bool d=true);
     void delete_boxes();
+    void reinitialize();
 
 private:
     Ui::MainWindow *ui;
@@ -68,6 +87,7 @@ private:
     const int BORDER_LEFT = 0;
     const int BORDER_RIGHT = SQUARE_SIDE * COLUMNS;
 
+    // QColor codes for the colors
     const QColor RED = QColor(255, 0, 0);
     const QColor VIOLET = QColor(221, 160, 221);
     const QColor GREEN = QColor(0, 255, 0);
@@ -90,19 +110,25 @@ private:
                      ORANGE,
                      NUMBER_OF_FRUITS};
 
-    // For randomly selecting fruits for the grid
-    std::default_random_engine randomEng_;
-    std::uniform_int_distribution<int> distr_;
-
+    // Container for items that have to be removed from the scene.
     std::set<QGraphicsRectItem*> objects_to_remove_;
 
+    // Indexes of the x and y positions most recently clicked.
     int clicked_x_;
     int clicked_y_;
 
-    std::string func_to_call_;
+    // Boolen to determine if a rectangle has been clicked and the game is
+    // still in process of deleting boxes or dropping them.
     bool already_pressed_ = false;
 
+    // Boolean to determine if a match was found when scene was clicked.
     bool no_match_ = false;
+
+    // Hours, minutes and seconds passed
+    // since the game was started or reinitialized.
+    int hours_ = 0;
+    int minutes_ = 0;
+    int seconds_ = 0;
 
     // Writes the titles for the grid rows and columns
     void init_titles();
@@ -113,12 +139,8 @@ private:
     // Checks the scene for any lines of three or more fruits.
     bool check_for_match();
 
+    // Functions to disable or enable direction buttons.
     void disable_buttons();
     void enable_buttons();
-
-    // Draws a single fruit near the right bottom corner of the grid
-    // At the moment, this function is not called in the template,
-    // but try to do so, if you want to use real fruits instead of rectangles.
-    void draw_fruit();
 };
 #endif // MAINWINDOW_HH

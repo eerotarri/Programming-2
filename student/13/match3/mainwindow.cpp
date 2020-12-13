@@ -1,3 +1,20 @@
+/*
+#############################################################################
+# COMP.CS.110 Programming 2: Autumn 2020                                    #
+# Project3: Match3                                                          #
+# File: mainwindow.cpp                                                      #
+# Description: Fruit flip game implementation file. Data-structure          #
+#        consists of QGraphicsRectItem pointers that have respective        #
+#        positions in the scene                                             #
+#                                                                           #
+# Program author                                                            #
+# Name: Eero Tarri                                                          #
+# Student number: 283568                                                    #
+# UserID: tarri                                                             #
+# E-Mail: eero.tarri@tuni.fi                                                #
+#############################################################################
+*/
+
 #include "mainwindow.hh"
 #include "ui_mainwindow.h"
 
@@ -6,6 +23,7 @@
 #include <QPixmap>
 #include <vector>
 
+// Constructor for MainWindow
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -30,46 +48,49 @@ MainWindow::MainWindow(QWidget *parent)
     // if its upper left corner is inside the sceneRect.
     scene_->setSceneRect(0, 0, BORDER_RIGHT - 1, BORDER_DOWN - 1);
 
-    // int seed = time(0); // You can change seed value for testing purposes
-    int seed = 5;
-    randomEng_.seed(seed);
-    distr_ = std::uniform_int_distribution<int>(0, NUMBER_OF_FRUITS - 1);
-    distr_(randomEng_); // Wiping out the first random number (which is almost always 0)
-
     init_titles();
     init_scene();
 
     ui->graphicsView->installEventFilter(this);
 
-    connect(ui->upButton, &QRadioButton::clicked, this, &MainWindow::on_button_clicked);
-    connect(ui->downButton, &QRadioButton::clicked, this, &MainWindow::on_button_clicked);
-    connect(ui->leftButton, &QRadioButton::clicked, this, &MainWindow::on_button_clicked);
-    connect(ui->rightButton, &QRadioButton::clicked, this, &MainWindow::on_button_clicked);
+    connect(ui->upButton, &QRadioButton::clicked, this, &MainWindow::button_pushed_down);
+    connect(ui->downButton, &QRadioButton::clicked, this, &MainWindow::button_pushed_down);
+    connect(ui->leftButton, &QRadioButton::clicked, this, &MainWindow::button_pushed_down);
+    connect(ui->rightButton, &QRadioButton::clicked, this, &MainWindow::button_pushed_down);
+
+    connect(ui->restartButton, &QPushButton::clicked, this, &MainWindow::reinitialize);
 
     // Sets button up checked by default.
     ui->upButton->setChecked(true);
 
+    // Timer for the clock with 1 second interval.
     timer = new QTimer();
     timer->setInterval(1000);
-    timer->setSingleShot(true);
     connect(timer, &QTimer::timeout, this, &MainWindow::on_timeout);
+    timer->start();
 
 }
 
+// Destructor for MainWindow
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+// Eventfilter to get position of the clicked rectangle.
+// When the scene is clicked position of cursor is saved in
+// attributes clicked_x_ and clicked_y_.
+// Disables clicking rectangles and direction buttons until
+// dropping boxes is done or the rectangle has been switched back.
+// If rectangle is clicked eventfilter will call for switch_boxes.
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (!already_pressed_) {
         if (event->type() == QEvent::MouseButtonPress) {
             already_pressed_ = true;
             disable_buttons();
-            QPoint point = ui->graphicsView->mapFromGlobal(QCursor::pos());
-            clicked_x_ = point.x();
-            clicked_y_ = point.y();
+            clicked_x_ = ui->graphicsView->mapFromGlobal(QCursor::pos()).x();
+            clicked_y_ = ui->graphicsView->mapFromGlobal(QCursor::pos()).y();
             no_match_ = false;
             switch_boxes();
         }
@@ -77,12 +98,49 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     return QMainWindow::eventFilter(watched, event);
 }
 
+// Timeout slot for updating the timeLabel. Gets current time from attributes
+// and updates it. Time is converted into a string type variable time that is
+// given to the timeLabel object.
 void MainWindow::on_timeout()
 {
-    timer->stop();
+    seconds_ += 1;
+    if (seconds_ > 59) {
+        seconds_ = 0;
+        minutes_ += 1;
+    }
+    if (minutes_ > 59) {
+        minutes_ = 0;
+        hours_ += 1;
+    }
+
+    std::string time;
+    if (hours_ < 10) {
+        time.append("0");
+        time.append(std::to_string(hours_));
+    } else {
+        time.append(std::to_string(hours_));
+    }
+    time.append(":");
+    if (minutes_ < 10) {
+        time.append("0");
+        time.append(std::to_string(minutes_));
+    } else {
+        time.append(std::to_string(minutes_));
+    }
+    time.append(":");
+    if (seconds_ < 10) {
+        time.append("0");
+        time.append(std::to_string(seconds_));
+    } else {
+        time.append(std::to_string(seconds_));
+    }
+    ui->timeLabel->setText(QString::fromStdString(time));
+
 }
 
-void MainWindow::on_button_clicked()
+// Slot for clicking the direction buttons. Finds out which button is activated
+// and changes attribute direction_ to corresponding DIRECTION type direction.
+void MainWindow::button_pushed_down()
 {
     if (ui->upButton->isChecked()) {
         direction_ = UP;
@@ -95,6 +153,7 @@ void MainWindow::on_button_clicked()
     }
 }
 
+// Initializes the titles around scene.
 void MainWindow::init_titles()
 {
     // Displaying column titles, starting from A
@@ -121,6 +180,10 @@ void MainWindow::init_titles()
     }
 }
 
+// Initializes the scene and fills it with colored rectangles.
+// Also fills the container fruits_ with pointers to the rectangles
+// in the same order as in the scene. At the start of the game or
+// when reinitialized this will repeat until no matches are found.
 void MainWindow::init_scene()
 {
     int i = 0;
@@ -162,6 +225,14 @@ void MainWindow::init_scene()
     }
 }
 
+// Function that finds the pointers to all the rectangles that make a match
+// of three or more. Algorithm iterates trough the objects and checks if to
+// consecutive objects have the same color. When the current rectangle no
+// longer has the same color as the previous or when the row or column has
+// no more objects to iterate trough the algorithm checks if the queue
+// container has three or more pointers in it and adds them to the container
+// objects_to_remove_.
+// Returns true if matches of three or more were found and false otherwise.
 bool MainWindow::check_for_match()
 {
     // Algorithm to search for rows of three or more fruits
@@ -263,6 +334,7 @@ bool MainWindow::check_for_match()
     return objects_to_remove_.size() != 0;
 }
 
+// Function to disable all the direction buttons.
 void MainWindow::disable_buttons()
 {
     ui->upButton->setEnabled(false);
@@ -271,6 +343,7 @@ void MainWindow::disable_buttons()
     ui->rightButton->setEnabled(false);
 }
 
+// Function to enable all the direction buttons.
 void MainWindow::enable_buttons()
 {
     ui->upButton->setEnabled(true);
@@ -279,9 +352,13 @@ void MainWindow::enable_buttons()
     ui->rightButton->setEnabled(true);
 }
 
+// Function to remove the objects on the container objects_to_remove_.
+// Iterates trough pointers in fruits_ and cross references them with
+// pointers in objects_to_remove_ and makes that pointer in fruits_ to
+// point at nullptr. Then deletes items in objects to remove.
+// Calls drop_boxes with 1 second delay and empties objects_to_remove_.
 void MainWindow::delete_boxes()
 {
-    already_pressed_ = true;
     int j_index = 0;
     for (auto row : fruits_) {
         int i_index = 0;
@@ -298,13 +375,41 @@ void MainWindow::delete_boxes()
         delete rec;
     }
 
+    // This adds the amount of removed objects to the pointNumber lcd.
+    int value = ui->pointNumber->intValue();
+    value += objects_to_remove_.size();
+    ui->pointNumber->display(QString::number(value));
+
     objects_to_remove_ = {};
     QTimer::singleShot(1000, this, SLOT(drop_boxes()));
 }
 
+// Resets the scene with new colors.
+// Resets the clock and points.
+void MainWindow::reinitialize()
+{
+    objects_to_remove_.clear();
+    scene_->clear();
+    fruits_.clear();
+    init_scene();
+
+    seconds_ = 0;
+    minutes_ = 0;
+    hours_ = 0;
+
+    ui->pointNumber->display(QString::number(0));
+}
+
+// Function to drop the boxes as low as they can go.
+// Iterates trought fruits_ and whenever rectangle that has nullptr
+// underneath it the rectangle is moved to the lower spot and previous position
+// is set to point at nullptr. When at least 1 box has been dropped the value
+// dropped is set to true. If dropped = true the function will call itself
+// recursively.
+// If more matches are found after dropping delete_boxes will be called.
+// Otherwise buttons and clicking rectangles will be enabled again.
 void MainWindow::drop_boxes(bool d)
 {
-    already_pressed_ = true;
     bool dropped = false;
     int j_index = 0;
     while (j_index < ROWS - 1) {
@@ -329,20 +434,25 @@ void MainWindow::drop_boxes(bool d)
     }
     if (check_for_match()) {
         QTimer::singleShot(1000, this, SLOT(delete_boxes()));
-    }
-    if (!check_for_match()) {
+    } else {
         already_pressed_ = false;
         enable_buttons();
     }
 }
 
+// Function to switch places with two chosen adjacent boxes.
+// Indexes are calculated from the position most recently clicked.
+// y_dir and x_dir save the position in fruits_ of the object that is switched
+// with the clicked object.
+// Function wont chance the positions of objects only their colours.
+// If no match is found when a rectangle is clicked the function will
+// call itself with 1 second delay. Attribute no_match_ tells the function
+// that it has called itself previously so it wont loop indefinitely.
+// If matches are found delete_boxes will be called.
 void MainWindow::switch_boxes()
 {
-    int x_of_item = clicked_x_ - clicked_x_ % SQUARE_SIDE;
-    int y_of_item = clicked_y_ - clicked_y_ % SQUARE_SIDE;
-
-    int x_index = x_of_item / SQUARE_SIDE;
-    int y_index = y_of_item / SQUARE_SIDE;
+    int x_index = (clicked_x_ - clicked_x_ % SQUARE_SIDE) / SQUARE_SIDE;
+    int y_index = (clicked_y_ - clicked_y_ % SQUARE_SIDE) / SQUARE_SIDE;
 
     int x_dir = x_index;
     int y_dir = y_index;
@@ -374,31 +484,3 @@ void MainWindow::switch_boxes()
     }
 
 }
-
-void MainWindow::draw_fruit()
-{
-    // Vector of fruits
-    const std::vector<std::string>
-            fruits = {"cherries", "strawberry", "orange", "pear", "apple",
-                      "bananas", "tomato", "grapes", "eggplant"};
-
-    // Defining where the images can be found and what kind of images they are
-    const std::string PREFIX(":/");
-    const std::string SUFFIX(".png");
-
-    // Converting image (png) to a pixmap
-    int i = 0; // try different values in 0 <= i < fruits.size()
-    std::string filename = PREFIX + fruits.at(i) + SUFFIX;
-    QPixmap image(QString::fromStdString(filename));
-
-    // Scaling the pixmap
-    image = image.scaled(SQUARE_SIDE, SQUARE_SIDE);
-
-    // Setting the pixmap for a new label
-    QLabel* label = new QLabel("test", this);
-    label->setGeometry(LEFT_MARGIN + COLUMNS * SQUARE_SIDE,
-                       TOP_MARGIN + ROWS * SQUARE_SIDE,
-                       SQUARE_SIDE, SQUARE_SIDE);
-    label->setPixmap(image);
-}
-

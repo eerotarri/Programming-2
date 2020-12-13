@@ -12,8 +12,11 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QLCDNumber>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QWidget>
@@ -29,6 +32,11 @@ public:
     QRadioButton *rightButton;
     QRadioButton *upButton;
     QRadioButton *downButton;
+    QLabel *timeText;
+    QLabel *pointText;
+    QLCDNumber *pointNumber;
+    QLabel *timeLabel;
+    QPushButton *restartButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -59,6 +67,21 @@ public:
         downButton = new QRadioButton(centralwidget);
         downButton->setObjectName(QString::fromUtf8("downButton"));
         downButton->setGeometry(QRect(140, 80, 106, 26));
+        timeText = new QLabel(centralwidget);
+        timeText->setObjectName(QString::fromUtf8("timeText"));
+        timeText->setGeometry(QRect(310, 20, 63, 20));
+        pointText = new QLabel(centralwidget);
+        pointText->setObjectName(QString::fromUtf8("pointText"));
+        pointText->setGeometry(QRect(390, 20, 63, 20));
+        pointNumber = new QLCDNumber(centralwidget);
+        pointNumber->setObjectName(QString::fromUtf8("pointNumber"));
+        pointNumber->setGeometry(QRect(380, 40, 64, 23));
+        timeLabel = new QLabel(centralwidget);
+        timeLabel->setObjectName(QString::fromUtf8("timeLabel"));
+        timeLabel->setGeometry(QRect(300, 40, 63, 20));
+        restartButton = new QPushButton(centralwidget);
+        restartButton->setObjectName(QString::fromUtf8("restartButton"));
+        restartButton->setGeometry(QRect(680, 30, 84, 28));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -80,6 +103,10 @@ public:
         rightButton->setText(QCoreApplication::translate("MainWindow", "Right", nullptr));
         upButton->setText(QCoreApplication::translate("MainWindow", "Up", nullptr));
         downButton->setText(QCoreApplication::translate("MainWindow", "Down", nullptr));
+        timeText->setText(QCoreApplication::translate("MainWindow", "Time", nullptr));
+        pointText->setText(QCoreApplication::translate("MainWindow", "Points", nullptr));
+        timeLabel->setText(QCoreApplication::translate("MainWindow", "00:00:00", nullptr));
+        restartButton->setText(QCoreApplication::translate("MainWindow", "RESTART", nullptr));
     } // retranslateUi
 
 };

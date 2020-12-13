@@ -59,7 +59,8 @@ OBJECTS       = main.o \
 		mainwindow.o \
 		qrc_mainwindow.o \
 		moc_mainwindow.o
-DIST          = /opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/spec_pre.prf \
+DIST          = instructions.txt \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/common/unix.conf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/common/linux.conf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/common/sanitize.conf \
@@ -243,6 +244,7 @@ DIST          = /opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/spec_pre.p
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/toolchain.prf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/default_pre.prf \
@@ -460,6 +462,7 @@ Makefile: fruit_flip.pro /opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/linux-g++/
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/toolchain.prf \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/default_pre.prf \
@@ -667,6 +670,7 @@ Makefile: fruit_flip.pro /opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/linux-g++/
 /opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/qt_config.prf:
 /opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/linux-g++/qmake.conf:
 /opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/exclusive_builds.prf:
 /opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/toolchain.prf:
 /opt/lintula/Qt/5.14.2/5.14.2/gcc_64/mkspecs/features/default_pre.prf:
@@ -1148,6 +1152,31 @@ mainwindow.o: mainwindow.cpp mainwindow.hh \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qlabel.h \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qframe.h \
 		ui_mainwindow.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtCore/QVariant \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/QApplication \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qapplication.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtCore/qcoreapplication.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtCore/qeventloop.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtGui/qguiapplication.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtGui/qinputmethod.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/QGraphicsView \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qgraphicsview.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtGui/qpainter.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtGui/qtextoption.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qscrollarea.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/QMenuBar \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qmenubar.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qmenu.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qaction.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qactiongroup.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/QRadioButton \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qradiobutton.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/QStatusBar \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/qstatusbar.h \
+		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtWidgets/QWidget \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtGui/QKeyEvent \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtCore/QDebug \
 		/opt/lintula/Qt/5.14.2/5.14.2/gcc_64/include/QtGui/QPixmap
