@@ -37,6 +37,7 @@ public:
     QLCDNumber *pointNumber;
     QLabel *timeLabel;
     QPushButton *restartButton;
+    QPushButton *quitButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -82,6 +83,9 @@ public:
         restartButton = new QPushButton(centralwidget);
         restartButton->setObjectName(QString::fromUtf8("restartButton"));
         restartButton->setGeometry(QRect(680, 30, 84, 28));
+        quitButton = new QPushButton(centralwidget);
+        quitButton->setObjectName(QString::fromUtf8("quitButton"));
+        quitButton->setGeometry(QRect(680, 70, 84, 28));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -107,6 +111,7 @@ public:
         pointText->setText(QCoreApplication::translate("MainWindow", "Points", nullptr));
         timeLabel->setText(QCoreApplication::translate("MainWindow", "00:00:00", nullptr));
         restartButton->setText(QCoreApplication::translate("MainWindow", "RESTART", nullptr));
+        quitButton->setText(QCoreApplication::translate("MainWindow", "QUIT", nullptr));
     } // retranslateUi
 
 };

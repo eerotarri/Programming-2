@@ -51,6 +51,7 @@ private slots:
     void drop_boxes(bool d=true);
     void delete_boxes();
     void reinitialize();
+    void quit();
 
 private:
     Ui::MainWindow *ui;

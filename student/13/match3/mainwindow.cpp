@@ -59,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->rightButton, &QRadioButton::clicked, this, &MainWindow::button_pushed_down);
 
     connect(ui->restartButton, &QPushButton::clicked, this, &MainWindow::reinitialize);
+    connect(ui->quitButton, &QPushButton::clicked, this, &MainWindow::quit);
 
     // Sets button up checked by default.
     ui->upButton->setChecked(true);
@@ -74,6 +75,14 @@ MainWindow::MainWindow(QWidget *parent)
 // Destructor for MainWindow
 MainWindow::~MainWindow()
 {
+    for (auto vector : fruits_) {
+        for (auto object : vector) {
+            if (object != nullptr) {
+                delete object;
+            }
+        }
+    }
+    delete timer;
     delete ui;
 }
 
@@ -398,6 +407,12 @@ void MainWindow::reinitialize()
     hours_ = 0;
 
     ui->pointNumber->display(QString::number(0));
+}
+
+// Slot to close the window
+void MainWindow::quit()
+{
+    this->close();
 }
 
 // Function to drop the boxes as low as they can go.

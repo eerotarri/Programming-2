@@ -1,0 +1,78 @@
+#############################################################################
+# COMP.CS.110 Programming 2: Autumn 2020                                    #
+# Project3: Match3                                                          #
+# File: mainwindow.hh                                                       #
+# Description: Fruit flip game instruction file. Data-structure             #
+#        consists of QGraphicsRectItem pointers that have respective        #
+#        positions in the scene                                             #
+#                                                                           #
+# Program author                                                            #
+# Name: Eero Tarri                                                          #
+# Student number: 283568                                                    #
+# UserID: tarri                                                             #
+# E-Mail: eero.tarri@tuni.fi                                                #
+#############################################################################
+
+In fruit flip the goal is to match three or more colors in a row. This happens
+by choosing the direction to which the player wants to switch the fruit with.
+Then the player must click a fruit on board. Chosen fruit will switch places
+with the fruit next to it to the chosen direction. If no matches are made with
+that move the boxes will switch places again to their original positions. If
+matches of three or more are made the boxes will not return to their previous
+positions. This time they will stay and the fruits that made the match are
+removed. All fruits above the removed fruits fall down as far as they can.
+Deleting a fruit will give the player one point that will be shown under the
+point marker.
+
+
+RESET button
+
+With this button the player can reset the board completely without closing the
+window first. It will delete all fruits on the board and replace them with new
+fruits. Points and time will reset also.
+
+
+QUIT button
+
+Window can be closed with quit button.
+
+
+Direction buttons:
+UP, DOWN, LEFT, RIGHT
+
+Direction buttons are pressed to choose in which direction the next fruit
+pressed will switch positions with. This will be disabled when software is
+deleting or dropping fruits.
+
+
+FRUITS
+
+Pressing the fruits will result in chosen fruit and the fruit next to it
+in the chosen direction switching places. This will be disabled when software is
+deleting or dropping fruits.
+
+
+TIME
+
+The game tracks time it has taken to play an individual game.
+
+
+POINTS
+
+The game tracks points that are shown in an LCD label.
+
+
+
+STRUCTURE
+
+The algorithm to has been implemented in one function. It will search for
+matches and store the fruits in an attribute container. Deleting and dropping
+fruits are in their own functions.
+
+Pressing the fruits has been done by getting the position of the cursos in the
+event of pressing mouse instead of using buttons. Cursor position is then
+calculated into indexes to find the fruit from the container.
+
+Getting matches are not limited to three but as many as the player can get in a
+row. L-shape of five fruits for example is possible also as long as the fruits
+make matches of at least three in each direction.
