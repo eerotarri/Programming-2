@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <ctype.h>
 #include <vector>
@@ -26,6 +27,7 @@ int main()
             ++i;
         }
     }
+
     char array[i];
     i = 0;
     for ( auto it = notation.begin(); *it != '#'; ++it ) {
@@ -78,18 +80,8 @@ int main()
                 cout << "Error: Unknown character" << endl;
                 return EXIT_FAILURE;
             }
-//            for ( auto kakka : operands ) {
-//                cout << kakka << " ";
-//            }
-//            cout << endl;
         }
 
         cout << "Correct: " << operands.at(0) << " is the result" << endl;
     }
-
-//    for ( char* position = array; position < array + i; position++) {
-//        cout << *position << endl;
-//    }
-
-
 }
